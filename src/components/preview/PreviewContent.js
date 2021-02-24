@@ -40,10 +40,10 @@ export default function PreviewContent({ compactType, ...rest }) {
     }, []);
     const onMouseDrop = useCallback(
         (layout, layoutItem, event) => {
-            const type = event.dataTransfer.getData("text/plain")
-            console.log('layoutItem', type);
-            console.log(itemIdx[type]);
-            console.log(layoutItem);
+            // const type = event.dataTransfer.getData("text/plain")
+            // console.log('layoutItem', type);
+            // console.log(itemIdx[type]);
+            // console.log(layoutItem);
             // // increase image count.
             // setItemIdx((layoutIt) => ({ ...layoutIt, [type]: layoutIt[type] + 1 }))
             // saveLayoutState(layout);
@@ -73,7 +73,8 @@ export default function PreviewContent({ compactType, ...rest }) {
     }, [arrangement])
 
     const onLayoutChange = useCallback((layout) => {
-        saveLayoutState(layout);
+        console.log(layout);
+        // saveLayoutState(layout);
     }, []);
 
 
@@ -85,7 +86,7 @@ export default function PreviewContent({ compactType, ...rest }) {
             onDrop={onMouseDrop}
             onLayoutChange={onLayoutChange}
             // // WidthProvider option
-            // measureBeforeMount={false}
+            measureBeforeMount={false}
             // // I like to have it animate on mount. If you don't, delete `useCSSTransforms` (it's default `true`)
             // // and set `measureBeforeMount={true}`.
             useCSSTransforms={chkMounted}
