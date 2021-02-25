@@ -1,8 +1,8 @@
 import React from "react";
 import _ from "lodash";
-import { Responsive, WidthProvider } from "react-grid-layout";
+import RGL, { WidthProvider } from "react-grid-layout";
 
-const ResponsiveReactGridLayout = WidthProvider(Responsive);
+const ReactGridLayout = WidthProvider(RGL);
 
 export default class DragFromOutsideLayout extends React.Component {
     static defaultProps = {
@@ -100,7 +100,7 @@ export default class DragFromOutsideLayout extends React.Component {
                 >
                     Droppable Element (Drag me!)
         </div>
-                <ResponsiveReactGridLayout
+                <ReactGridLayout
                     {...this.props}
                     layouts={this.state.layouts}
                     onBreakpointChange={this.onBreakpointChange}
@@ -116,7 +116,7 @@ export default class DragFromOutsideLayout extends React.Component {
                     isDroppable={true}
                 >
                     {this.generateDOM()}
-                </ResponsiveReactGridLayout>
+                </ReactGridLayout>
             </div>
         );
     }

@@ -10,12 +10,15 @@ import { Responsive, WidthProvider } from "react-grid-layout";
 import useIsMounted from 'hooks/useIsMounted'
 import PreviewComponent from './PreviewComponent'
 import { layoutState } from 'helper/layoutState'
+import { getElementError } from '@testing-library/react';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 export default function PreviewContent({ compactType, ...rest }) {
 
-    const [arrangement, setArrangement] = useState([])
+    const [layouts, setLayouts] = useState({
+        lg: []
+    });
     const [breakpt, setBreakpt] = useState();
 
     const [itemIdx, setItemIdx] = useState({
@@ -30,7 +33,7 @@ export default function PreviewContent({ compactType, ...rest }) {
     useEffect(() => {
         const lay = layoutState.getState();
         if (lay && lay.arrange)
-            setArrangement(lay.arrange);
+            setLayouts({ lg: lay.arrange });
     }, [])
 
     const onBreakpointChange = useCallback((b) => {
@@ -39,28 +42,36 @@ export default function PreviewContent({ compactType, ...rest }) {
 
     const onMouseDrop = useCallback(
         (layout, layoutItem, event) => {
-            const appendedItem = {
-                ...layoutItem,
-                id: _.uniqueId('comp')
-            }
-            saveLayoutState((arrange) => [...arrange, appendedItem]);
+            console.log('-------onMouseDrop--------');
+            saveLayoutState(layout);
         },
         [],
+
     )
-    const saveLayoutState = useCallback((larrange) => {
-        layoutState.saveState({ arrange: larrange });
-        setArrangement(larrange);
+    const saveLayoutState = useCallback((lgLayout) => {
+        const checkAppendedStatus = (l) => {
+            return l.find(item => item.i === '__dropping-elem__' || item.i === 'null')
+        }
+        const newState = lgLayout.map(i => i);
+        const item = checkAppendedStatus(newState);
+        if (item) {
+            item.i = (newState.length + 1).toString();
+        }
+
+        setLayouts({ lg: newState });
+        layoutState.saveState({ arrange: newState });
     }, [])
 
     const onLayoutChange = useCallback((layout) => {
+        console.log('----- onLayoutChange ------');
         saveLayoutState(layout);
     }, []);
 
 
     return (
-        chkMounted && <ResponsiveReactGridLayout
+        <ResponsiveReactGridLayout
             {...rest}
-            // layouts={this.state.layouts}
+            layouts={layouts}
             onBreakpointChange={onBreakpointChange}
             onDrop={onMouseDrop}
             onLayoutChange={onLayoutChange}
@@ -68,13 +79,13 @@ export default function PreviewContent({ compactType, ...rest }) {
             measureBeforeMount={false}
             // // I like to have it animate on mount. If you don't, delete `useCSSTransforms` (it's default `true`)
             // // and set `measureBeforeMount={true}`.
-            useCSSTransforms={chkMounted}
+            useCSSTransforms={!!chkMounted}
             compactType={compactType}
             preventCollision={!compactType}
             isDroppable={true}
         >
             {
-                _.isArray(arrangement) && arrangement.map((item) => (
+                _.isArray(layouts.lg) && layouts.lg.map((item) => (
                     <div key={item.id}>
                         <PreviewComponent {...item} />
                     </div>

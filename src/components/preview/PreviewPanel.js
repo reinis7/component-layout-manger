@@ -2,6 +2,7 @@ import React from 'react'
 import styled from 'styled-components';
 
 import PreviewContent from 'components/preview/PreviewContent'
+import BasicLayout from 'components/preview/BasicLayout'
 import { layoutState } from 'helper/layoutState'
 
 const PreviewHeaderWrapper = styled.div`
@@ -30,7 +31,8 @@ export default function PreviewPanel() {
                 </DeleteButton>
             </PreviewHeaderWrapper>
             <PreviewContentWrapper>
-                <PreviewContent />
+                {/* <PreviewContent /> */}
+                <BasicLayout />
             </PreviewContentWrapper>
         </>
     )
