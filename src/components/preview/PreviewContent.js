@@ -1,97 +1,81 @@
-import React, {
-    useEffect,
-    useState,
-    useCallback
-} from 'react'
-
+import React from "react";
 import _ from "lodash";
-import { Responsive, WidthProvider } from "react-grid-layout";
+import RGL, { WidthProvider } from "react-grid-layout";
 
 import useIsMounted from 'hooks/useIsMounted'
-import PreviewComponent from './PreviewComponent'
-import { layoutState } from 'helper/layoutState'
-import { getElementError } from '@testing-library/react';
 
-const ResponsiveReactGridLayout = WidthProvider(Responsive);
+const ReactGridLayout = WidthProvider(RGL);
+const DROPPING_ITEM = 'DROPPING_ITEM';
 
-export default function PreviewContent({ compactType, ...rest }) {
+export default function BasicLayout(props) {
 
-    const [layouts, setLayouts] = useState({
-        lg: []
-    });
-    const [breakpt, setBreakpt] = useState();
-
+    const [newCounter, setNewCounter] = React.useState(0)
+    const [layout, setLayout] = React.useState([]);
     const chkMounted = useIsMounted();
-    useEffect(() => {
-        const lay = layoutState.getState();
-        if (lay && lay.arrange)
-            setLayouts({ lg: lay.arrange });
-    }, [])
 
-    const onBreakpointChange = useCallback((b) => {
-        setBreakpt(b);
-    }, []);
+    const handleAddItem = React.useCallback((lItem) => {
+        // Add a new item. It must have a unique key!
+        setNewCounter(c => c + 1);
 
-    const onMouseDrop = useCallback(
-        (layout, layoutItem, event) => {
-            console.log('-------onMouseDrop--------');
-            saveLayoutState(layout);
-        },
-        [],
+        setLayout((layout) => layout.filter(item => item.i !== DROPPING_ITEM).concat([{
+            i: "n" + newCounter,
+            x: lItem.x,
+            y: lItem.y,
+            w: lItem.w,
+            h: lItem.h
+        }]))
+    }, [newCounter]);
 
-    )
-    const saveLayoutState = useCallback((lgLayout) => {
-        const checkAppendedStatus = (l) => {
-            return l.find(item => item.i === '__dropping-elem__' || item.i === 'null')
-        }
-        const newState = lgLayout.map(i => i);
-        const item = checkAppendedStatus(newState);
-        if (item) {
-            item.i = (newState.length + 1).toString();
-        }
+    const handleRemoveItem = React.useCallback((el) => {
+        setLayout(_.reject(layout, { i: el.i }));
+    }, [layout]);
 
-        setLayouts({ lg: newState });
-        layoutState.saveState({ arrange: newState });
-    }, [])
+    const handleLayoutChange = React.useCallback((lout) => {
+        /*eslint no-console: 0*/
+        console.log(lout);
+        setLayout(lout);
+        props.onLayoutChange(lout);
+    }, [props])
 
-    const onLayoutChange = useCallback((layout) => {
-        console.log('----- onLayoutChange ------');
-        saveLayoutState(layout);
-    }, []);
 
+    const handleDropComponent = React.useCallback((lout, lItem, event) => {
+        // Add a new item. It must have a unique key!		
+        handleAddItem(lItem);
+    }, [handleAddItem]);
 
     return (
-        <ResponsiveReactGridLayout
-            {...rest}
-            layouts={layouts}
-            onBreakpointChange={onBreakpointChange}
-            onDrop={onMouseDrop}
-            onLayoutChange={onLayoutChange}
-            // // WidthProvider option
-            measureBeforeMount={false}
-            // // I like to have it animate on mount. If you don't, delete `useCSSTransforms` (it's default `true`)
-            // // and set `measureBeforeMount={true}`.
-            useCSSTransforms={!!chkMounted}
-            compactType={compactType}
-            preventCollision={!compactType}
-            isDroppable={true}
-        >
-            {
-                _.isArray(layouts.lg) && layouts.lg.map((item) => (
-                    <div key={item.id}>
-                        <PreviewComponent {...item} />
-                    </div>
-                ))
-            }
-        </ResponsiveReactGridLayout >
+        <>
+            <ReactGridLayout
+                {...props}
+                layout={layout}
+                onDrop={handleDropComponent}
+                useCSSTransforms={!!chkMounted}
+                measureBeforeMount={false}
+                isDroppable={true}
+                droppingItem={{
+                    w: 12,
+                    h: 2,
+                    i: DROPPING_ITEM
+                }
+                }
+                onLayoutChange={handleLayoutChange}
+            >
+                {
+                    layout.map((item) =>
+                        (<div key={item.i} data-grid={item}>
+                            <span className="text">{item.i}</span>
+                        </div>)
+                    )
+                }
+            </ReactGridLayout>
+        </>
     )
 }
 
-PreviewContent.defaultProps = {
+
+BasicLayout.defaultProps = {
     className: "layout",
+    cols: 12,
     rowHeight: 30,
     onLayoutChange: function () { },
-    cols: { lg: 12, md: 12, sm: 6, xs: 2, xxs: 2 },
-    compactType: "vertical"
 };
-
