@@ -91,10 +91,9 @@ const PreviewContent = React.forwardRef((props, ref) => {
       isDroppable={true}
       droppingItem={{
         w: 12,
-        h: 2,
+        h: 1,
         i: DROPPING_ITEM
-      }
-      }
+      }}
       onLayoutChange={handleLayoutChange}
     >
       {
