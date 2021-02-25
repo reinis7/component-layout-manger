@@ -2,18 +2,24 @@
 import React from 'react';
 import styled from 'styled-components';
 import ToolPanel from 'components/sidebar/ToolPanel';
-import PreviewPanel from 'components/preview/PreviewPanel';
+import PreviewContent from 'components/preview/PreviewContent';
 
 
 export default function MainLayout() {
+    const prvRef = React.useRef(null);
+    const deleteAllComponents = React.useCallback(() => {
+        console.log(`deleteAllComponents`);
+        console.log(prvRef);
+        prvRef.current.onClearAllItem();
+    }, [prvRef])
     return (
         <>
             <MainWrapper>
                 <ComponentsWrapper>
-                    <ToolPanel />
+                    <ToolPanel onDeleteButtonClicked={deleteAllComponents} />
                 </ComponentsWrapper>
                 <PreviewWrapper>
-                    <PreviewPanel />
+                    <PreviewContent ref={prvRef} />
                 </PreviewWrapper>
             </MainWrapper>
         </>

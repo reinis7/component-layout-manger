@@ -1,4 +1,3 @@
-
 import React from 'react'
 import styled from 'styled-components'
 
@@ -29,7 +28,14 @@ const DeleteButton = styled.button`
     width: 10rem;  
 `;
 
-export default function ToolPanel() {
+
+const CommonButton = styled.button`
+    height: 2rem;
+    margin: 0.25rem;
+    width: 10rem;  
+`;
+
+export default function ToolPanel({ onDeleteButtonClicked }) {
 
   const dragableAttr = React.useMemo(() => [
     {
@@ -51,7 +57,6 @@ export default function ToolPanel() {
   ], [])
 
 
-
   return (
     <ToolPanelWrapper>
       {
@@ -67,6 +72,15 @@ export default function ToolPanel() {
           </DragSelectedItem>
         )
       }
+      <CommonButton
+        onClick={() => onDeleteButtonClicked()}
+      >
+        Clear ALL
+      </CommonButton>
     </ToolPanelWrapper >
   )
+}
+
+ToolPanel.defaultProps = {
+  onDeleteButtonClicked: () => { console.log('onDeleteButtonClicked') }
 }

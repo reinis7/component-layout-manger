@@ -3,17 +3,21 @@ import { mystorage } from './localstorage.js';
 const LAYOUT_STATE = 'layout_state';
 
 export const layoutState = {
-    saveState: (state) => {
-        mystorage.setItem(LAYOUT_STATE, JSON.stringify(state));
+    saveState: (layout, mxCount) => {
+        mystorage.setItem(LAYOUT_STATE, JSON.stringify({
+            layout,
+            mxCount
+        }));
     },
     getState: () => {
-        let layout = {}
+        let itemLayout = {}
         try {
-            layout = JSON.parse(mystorage.getItem(LAYOUT_STATE));
+            itemLayout = JSON.parse(mystorage.getItem(LAYOUT_STATE));
+            if (!itemLayout) itemLayout = { layout: [], mxCount: 0 }
         } catch (error) {
-            layout = {}
+            itemLayout = { layout: [], mxCount: 0 }
         }
-        return layout;
+        return itemLayout;
     },
     clearState: () => {
         mystorage.removeItem(LAYOUT_STATE);
