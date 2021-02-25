@@ -8,8 +8,6 @@ import PreviewContent from 'components/preview/PreviewContent';
 export default function MainLayout() {
     const prvRef = React.useRef(null);
     const deleteAllComponents = React.useCallback(() => {
-        console.log(`deleteAllComponents`);
-        console.log(prvRef);
         prvRef.current.onClearAllItem();
     }, [prvRef])
     return (

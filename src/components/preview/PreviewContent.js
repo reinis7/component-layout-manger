@@ -4,12 +4,19 @@ import RGL, { WidthProvider } from "react-grid-layout";
 
 import useIsMounted from 'hooks/useIsMounted'
 import { layoutState } from 'helper/layoutState';
-import PreviewPanel from "./PreviewPanel";
 import PreviewComponent from "./PreviewComponent";
+import { IMAGE_LABEL, VIDEO_LABEL, LINK_LABEL, TEXT_LABEL, CUSTOM_HTML_LABEL, DROPPING_ITEM } from 'helper/commonNames';
+import styled from "styled-components";
 
 
 const ReactGridLayout = WidthProvider(RGL);
-const DROPPING_ITEM = 'DROPPING_ITEM';
+
+const DeleteButton = styled.span`
+  position: "absolute";
+  right: "2px";
+  top: 0;
+  cursor: "pointer";
+`
 
 const PreviewContent = React.forwardRef((props, ref) => {
 
@@ -20,7 +27,6 @@ const PreviewContent = React.forwardRef((props, ref) => {
 
   useEffect(() => {
     const { layout, mxCount, itemProps } = layoutState.getState();
-    console.log(layout);
     setNewCounter(mxCount);
     setItemLayout(layout);
     setItemsProps(itemProps);
@@ -33,13 +39,31 @@ const PreviewContent = React.forwardRef((props, ref) => {
   const handleAddItem = React.useCallback((lItem, type) => {
     setNewCounter(c => c + 1);
     const newIdx = "n" + newCounter;
-    setItemLayout(l => l.map(item => item.i !== DROPPING_ITEM ? item : {
-      i: newIdx,
-      x: lItem.x,
-      y: lItem.y,
-      w: lItem.w,
-      h: lItem.h,
-    }))
+
+    const getNewItem = (id, type) => {
+      let [x, y, w, h] = [0, 0, 12, 1]
+      switch (type) {
+        case IMAGE_LABEL:
+        case VIDEO_LABEL:
+          x = 3;
+          h = 4;
+          w = 6;
+          break;
+        case LINK_LABEL:
+        case TEXT_LABEL:
+        case CUSTOM_HTML_LABEL:
+        default:
+          break;
+      }
+      return {
+        i: id,
+        x: x,
+        y: y,
+        w: w,
+        h: h,
+      }
+    }
+    setItemLayout(l => l.map(item => item.i !== DROPPING_ITEM ? item : getNewItem(newIdx, type)))
     setItemsProps((p) => ({
       ...p,
       [newIdx]: {
@@ -79,7 +103,6 @@ const PreviewContent = React.forwardRef((props, ref) => {
       handleClearAllItem();
     }
   }));
-  console.log(itemLayout)
 
   return (
     <ReactGridLayout
@@ -92,7 +115,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
       droppingItem={{
         w: 12,
         h: 1,
-        i: DROPPING_ITEM
+        i: "New Item"
       }}
       onLayoutChange={handleLayoutChange}
     >
@@ -101,6 +124,12 @@ const PreviewContent = React.forwardRef((props, ref) => {
           (<div key={item.i} data-grid={item}>
             <PreviewComponent item={item} {...itemsProps[item.i]} >
             </PreviewComponent>
+            <DeleteButton
+              className="remove"
+              onClick={handleRemoveItem(item.i)}
+            >
+              x
+            </DeleteButton>
           </div>)
         )
       }

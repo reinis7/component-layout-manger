@@ -1,4 +1,4 @@
-import { mystorage } from './localstorage.js';
+import { mystorage } from './localStorage.js';
 
 const LAYOUT_STATE = 'layout_state';
 

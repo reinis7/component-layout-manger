@@ -1,5 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
+import _ from 'lodash'
+
+import { COMPONENT_TYPES } from 'helper/commonNames'
 
 const ToolPanelWrapper = styled.div`
     width: 200px;
@@ -37,36 +40,16 @@ const CommonButton = styled.button`
 
 export default function ToolPanel({ onDeleteButtonClicked }) {
 
-  const dragableAttr = React.useMemo(() => [
-    {
-      label: 'LINK',
-      value: 'link'
-    }, {
-      label: 'TEXT',
-      value: 'text'
-    }, {
-      label: 'IMAGE',
-      value: 'image'
-    }, {
-      label: 'VIDEO',
-      value: 'video'
-    }, {
-      label: 'CUSTOM HTML',
-      value: 'custom_html'
-    }
-  ], [])
-
-
   return (
     <ToolPanelWrapper>
       {
-        dragableAttr.map((item) =>
+        _.toPairs(COMPONENT_TYPES).map(([key, item]) =>
           <DragSelectedItem
-            key={item.value}
+            key={key}
             className="droppab le-element"
             draggable={true}
             unselectable="on"
-            onDragStart={e => e.dataTransfer.setData("text/plain", item.value)}
+            onDragStart={e => e.dataTransfer.setData("text/plain", key)}
           >
             {item.label}
           </DragSelectedItem>
