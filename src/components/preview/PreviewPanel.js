@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import PreviewContent from 'components/preview/PreviewContent'
 import BasicLayout from 'components/preview/BasicLayout'
+import LocalStorageLayout from 'components/preview/LocalStorageLayout'
 import { layoutState } from 'helper/layoutState'
 
 const PreviewHeaderWrapper = styled.div`
@@ -12,7 +13,7 @@ const PreviewHeaderWrapper = styled.div`
 const PreviewContentWrapper = styled.div`  
     min-height: 5rem ;
 `;
-const DeleteButton = styled.button`
+const CommonButton = styled.button`
     height: 2rem;
     margin: 0.25rem;
     width: 10rem;  
@@ -24,15 +25,17 @@ export default function PreviewPanel() {
     return (
         <>
             <PreviewHeaderWrapper>
-                <DeleteButton
+                <CommonButton
                     onClick={handleClearBtnClicked}
                 >
                     Clear ALL
-                </DeleteButton>
+                </CommonButton>
+
             </PreviewHeaderWrapper>
             <PreviewContentWrapper>
                 {/* <PreviewContent /> */}
                 <BasicLayout />
+                {/* <LocalStorageLayout /> */}
             </PreviewContentWrapper>
         </>
     )

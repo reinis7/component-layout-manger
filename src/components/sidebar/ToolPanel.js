@@ -31,41 +31,42 @@ const DeleteButton = styled.button`
 
 export default function ToolPanel() {
 
-    const dragableAttr = React.useMemo(() => [
-        {
-            label: 'LINK',
-            value: 'link'
-        }, {
-            label: 'TEXT',
-            value: 'text'
-        }, {
-            label: 'IMAGE',
-            value: 'image'
-        }, {
-            label: 'VIDEO',
-            value: 'video'
-        }, {
-            label: 'CUSTOM HTML',
-            value: 'custom_html'
-        }
-    ], [])
+  const dragableAttr = React.useMemo(() => [
+    {
+      label: 'LINK',
+      value: 'link'
+    }, {
+      label: 'TEXT',
+      value: 'text'
+    }, {
+      label: 'IMAGE',
+      value: 'image'
+    }, {
+      label: 'VIDEO',
+      value: 'video'
+    }, {
+      label: 'CUSTOM HTML',
+      value: 'custom_html'
+    }
+  ], [])
 
 
 
-    return (
-        <ToolPanelWrapper>
-            {dragableAttr.map((item) =>
-                <DragSelectedItem
-                    key={item.value}
-                    className="droppab le-element"
-                    draggable={true}
-                    unselectable="on"
-                    onDragStart={e => e.dataTransfer.setData("text/plain", item.value)}
-                >
-                    {item.label}
-                </DragSelectedItem>
-
-            )}
-        </ToolPanelWrapper>
-    )
+  return (
+    <ToolPanelWrapper>
+      {
+        dragableAttr.map((item) =>
+          <DragSelectedItem
+            key={item.value}
+            className="droppab le-element"
+            draggable={true}
+            unselectable="on"
+            onDragStart={e => e.dataTransfer.setData("text/plain", item.value)}
+          >
+            {item.label}
+          </DragSelectedItem>
+        )
+      }
+    </ToolPanelWrapper >
+  )
 }

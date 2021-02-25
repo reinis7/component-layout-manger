@@ -2,11 +2,14 @@ import React from "react";
 import _ from "lodash";
 import RGL, { WidthProvider } from "react-grid-layout";
 
+import useIsMounted from 'hooks/useIsMounted'
+
 const ReactGridLayout = WidthProvider(RGL);
+
 
 export default function BasicLayout(props) {
 
-	const [newCounter, setNewCounter] = React.useState(1)
+	const [newCounter, setNewCounter] = React.useState(0)
 
 	const [layout, setLayout] = React.useState([{
 		x: 0,
@@ -16,34 +19,63 @@ export default function BasicLayout(props) {
 		i: "1"
 	}]);
 
-	const onAddItem = React.useCallback((el) => {
-		// Add a new item. It must have a unique key!
-		setLayout(layout.concat({
-			i: "n" + newCounter,
-			x: 0,
-			y: Infinity, // puts it at the bottom
-			w: 12,
-			h: 2
-		}))
-		// Increment the counter to ensure key is always unique.
-		setNewCounter(newCounter + 1);
-	}, [newCounter, layout]);
+	const chkMounted = useIsMounted();
 
-	const onLayoutChange = React.useCallback((layout) => {
-		props.onLayoutChange(layout);
+	const handleAddItem = React.useCallback((lItem) => {
+		// Add a new item. It must have a unique key!
+		console.log(lItem);
+		console.log(`newCounter ${newCounter}`);
+		setNewCounter((c) => {
+			console.log('c', c)
+			return c + 1
+		});
+		setLayout((layout) => layout.concat([{
+			i: "n" + newCounter,
+			x: lItem.x,
+			y: lItem.y,
+			w: lItem.w,
+			h: lItem.h
+		}]))
+		console.log(newCounter);
+		// Increment the counter to ensure key is always unique.
+	}, [newCounter, setNewCounter]);
+
+	const handleRemoveItem = React.useCallback((el) => {
+		setLayout(_.reject(layout, { i: el.i }));
+	}, [layout]);
+
+	const handleLayoutChange = React.useCallback((lout) => {
+		/*eslint no-console: 0*/
+		console.log(lout);
+		setLayout(lout);
+		props.onLayoutChange(lout);
 	}, [])
+
+
+	const handleDropComponent = React.useCallback((lout, lItem, event) => {
+		// Add a new item. It must have a unique key!
+		console.log(lItem);
+		handleAddItem(lItem);
+	}, [handleAddItem]);
+
+	console.log(layout);
 
 	return (
 		<>
-			<button onClick={onAddItem}>Add Item</button>
 			<ReactGridLayout
 				layout={layout}
-				onLayoutChange={onLayoutChange}
+				onLayoutChange={handleLayoutChange}
+				onDrop={handleDropComponent}
+				useCSSTransforms={true}
+				isDroppable={true}
+				droppingItem={
+					{ w: 12, h: 2, i: "dropping_item" }
+				}
 				{...props}
 			>
 				{
-					_.map(layout, (item) =>
-						(<div key={item.i}>
+					layout.map((item) =>
+						(<div key={item.i} data-grid={item}>
 							<span className="text">{item.i}</span>
 						</div>)
 					)
@@ -56,8 +88,7 @@ export default function BasicLayout(props) {
 
 BasicLayout.defaultProps = {
 	className: "layout",
-	items: 2,
+	cols: 12,
 	rowHeight: 30,
 	onLayoutChange: function () { },
-	cols: 12
 };

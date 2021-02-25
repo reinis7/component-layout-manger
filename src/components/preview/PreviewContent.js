@@ -21,14 +21,6 @@ export default function PreviewContent({ compactType, ...rest }) {
     });
     const [breakpt, setBreakpt] = useState();
 
-    const [itemIdx, setItemIdx] = useState({
-        image: 0,
-        link: 0,
-        video: 0,
-        customlink: 0,
-        text: 0
-    });
-
     const chkMounted = useIsMounted();
     useEffect(() => {
         const lay = layoutState.getState();
