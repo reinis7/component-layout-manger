@@ -7,15 +7,15 @@ import React, {
 import _ from "lodash";
 import { Responsive, WidthProvider } from "react-grid-layout";
 
-
 import useIsMounted from 'hooks/useIsMounted'
+import PreviewComponent from './PreviewComponent'
 import { layoutState } from 'helper/layoutState'
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 export default function PreviewContent({ compactType, ...rest }) {
 
-    const [arrangement, setArrangement] = useState({})
+    const [arrangement, setArrangement] = useState([])
     const [breakpt, setBreakpt] = useState();
 
     const [itemIdx, setItemIdx] = useState({
@@ -26,55 +26,34 @@ export default function PreviewContent({ compactType, ...rest }) {
         text: 0
     });
 
-
     const chkMounted = useIsMounted();
     useEffect(() => {
-        // const larrange = layoutState.getState();
-        const larrange = generateLayout();
-        console.log(larrange);
-        setArrangement(larrange);
+        const lay = layoutState.getState();
+        if (lay && lay.arrange)
+            setArrangement(lay.arrange);
     }, [])
 
     const onBreakpointChange = useCallback((b) => {
         setBreakpt(b);
     }, []);
+
     const onMouseDrop = useCallback(
         (layout, layoutItem, event) => {
-            // const type = event.dataTransfer.getData("text/plain")
-            // console.log('layoutItem', type);
-            // console.log(itemIdx[type]);
-            // console.log(layoutItem);
-            // // increase image count.
-            // setItemIdx((layoutIt) => ({ ...layoutIt, [type]: layoutIt[type] + 1 }))
-            // saveLayoutState(layout);
+            const appendedItem = {
+                ...layoutItem,
+                id: _.uniqueId('comp')
+            }
+            saveLayoutState((arrange) => [...arrange, appendedItem]);
         },
         [],
     )
-    const saveLayoutState = useCallback((layout) => {
-        setArrangement(layout);
+    const saveLayoutState = useCallback((larrange) => {
+        layoutState.saveState({ arrange: larrange });
+        setArrangement(larrange);
     }, [])
-    const generateDOM = useCallback(() => {
-        return _.map(arrangement, function (l, i) {
-            return (
-                <div key={i} className={l.static ? "static" : ""}>
-                    {l.static ? (
-                        <span
-                            className="text"
-                            title="This item is static and cannot be removed or resized."
-                        >
-                            Static - {i}
-                        </span>
-                    ) : (
-                            <span className="text">{i}</span>
-                        )}
-                </div>
-            );
-        });
-    }, [arrangement])
 
     const onLayoutChange = useCallback((layout) => {
-        console.log(layout);
-        // saveLayoutState(layout);
+        saveLayoutState(layout);
     }, []);
 
 
@@ -94,7 +73,13 @@ export default function PreviewContent({ compactType, ...rest }) {
             preventCollision={!compactType}
             isDroppable={true}
         >
-            {generateDOM()}
+            {
+                _.isArray(arrangement) && arrangement.map((item) => (
+                    <div key={item.id}>
+                        <PreviewComponent {...item} />
+                    </div>
+                ))
+            }
         </ResponsiveReactGridLayout >
     )
 }
@@ -103,21 +88,7 @@ PreviewContent.defaultProps = {
     className: "layout",
     rowHeight: 30,
     onLayoutChange: function () { },
-    cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 },
+    cols: { lg: 12, md: 12, sm: 6, xs: 2, xxs: 2 },
     compactType: "vertical"
 };
-
-function generateLayout() {
-    return _.map(_.range(0, 10), function (item, i) {
-        var y = Math.ceil(Math.random() * 4) + 1;
-        return {
-            x: Math.round(Math.random() * 5) * 2,
-            y: Math.floor(i / 6) * y,
-            w: 2,
-            h: y,
-            i: i.toString(),
-            static: Math.random() < 0.05
-        };
-    });
-}
 

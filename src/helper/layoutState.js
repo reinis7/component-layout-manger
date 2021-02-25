@@ -4,10 +4,16 @@ const LAYOUT_STATE = 'layout_state';
 
 export const layoutState = {
     saveState: (state) => {
-        mystorage.setItem(LAYOUT_STATE, state);
+        mystorage.setItem(LAYOUT_STATE, JSON.stringify(state));
     },
     getState: () => {
-        return mystorage.getItem(LAYOUT_STATE);
+        let layout = {}
+        try {
+            layout = JSON.parse(mystorage.getItem(LAYOUT_STATE));
+        } catch (error) {
+            layout = {}
+        }
+        return layout;
     },
     clearState: () => {
         mystorage.removeItem(LAYOUT_STATE);

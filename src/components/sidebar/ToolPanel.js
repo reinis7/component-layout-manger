@@ -23,6 +23,12 @@ const DragSelectedItem = styled.button`
   
 `;
 
+const DeleteButton = styled.button`
+    height: 2rem;
+    margin: 0.25rem;
+    width: 10rem;  
+`;
+
 export default function ToolPanel() {
 
     const dragableAttr = React.useMemo(() => [
@@ -43,6 +49,8 @@ export default function ToolPanel() {
             value: 'custom_html'
         }
     ], [])
+
+
 
     return (
         <ToolPanelWrapper>
