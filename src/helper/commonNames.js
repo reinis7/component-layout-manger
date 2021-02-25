@@ -24,4 +24,6 @@ export const COMPONENT_TYPES = {
 };
 
 export const DROPPING_ITEM = 'DROPPING_ITEM';
+export const CONTENT_NAME = 'CONTENT_NAME';
+export const CODE_NAME = 'CODE_NAME';
 
