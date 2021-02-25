@@ -33,6 +33,7 @@ const ComponentsWrapper = styled.div`
     flex: 1 0 30%;
     width: 30%;
     max-width: 230px;
+    min-width: 230px;
     height: 100vm;
     padding: 10px;
     background-color: #4caf50;

@@ -4,55 +4,42 @@ import RGL, { WidthProvider } from "react-grid-layout";
 
 const ReactGridLayout = WidthProvider(RGL);
 
-export default class BasicLayout extends React.PureComponent {
+export default function BasicLayout(props) {
 
-	constructor(props) {
-		super(props);
 
-		const layout = this.generateLayout();
-		this.state = { layout };
-	}
+	const [layout, setLayout] = React.useState([{
+		x: 0,
+		y: 0,
+		w: 12,
+		h: 2,
+		i: "1"
+	}]);
 
-	generateDOM() {
-		return _.map(_.range(this.props.items), function (i) {
-			return (
-				<div key={i}>
-					<span className="text">{i}</span>
-				</div>
-			);
-		});
-	}
+	const generateDOM = React.useCallback(() => {
+		return
+	}, []);
 
-	generateLayout() {
-		const p = this.props;
-		return _.map(new Array(p.items), function (item, i) {
-			const y = _.result(p, "y") || Math.ceil(Math.random() * 4) + 1;
-			return {
-				x: 0,
-				y: Math.floor(i / 6) * y,
-				w: 12,
-				h: y,
-				i: i.toString()
-			};
-		});
-	}
+	const onLayoutChange = React.useCallback((layout) => {
+		props.onLayoutChange(layout);
+	}, [])
 
-	onLayoutChange(layout) {
-		this.props.onLayoutChange(layout);
-	}
-
-	render() {
-		return (
-			<ReactGridLayout
-				layout={this.state.layout}
-				onLayoutChange={this.onLayoutChange}
-				{...this.props}
-			>
-				{this.generateDOM()}
-			</ReactGridLayout>
-		);
-	}
+	return (
+		<ReactGridLayout
+			layout={layout}
+			onLayoutChange={onLayoutChange}
+			{...props}
+		>
+			{
+				_.map(layout, (item) =>
+					(<div key={item.i}>
+						<span className="text">{item.i}</span>
+					</div>)
+				)
+			}
+		</ReactGridLayout>
+	)
 }
+
 
 BasicLayout.defaultProps = {
 	className: "layout",
