@@ -4,6 +4,8 @@ import RGL, { WidthProvider } from "react-grid-layout";
 
 import useIsMounted from 'hooks/useIsMounted'
 import { layoutState } from 'helper/layoutState';
+import PreviewPanel from "./PreviewPanel";
+import PreviewComponent from "./PreviewComponent";
 
 
 const ReactGridLayout = WidthProvider(RGL);
@@ -13,27 +15,36 @@ const PreviewContent = React.forwardRef((props, ref) => {
 
   const [newCounter, setNewCounter] = React.useState(0)
   const [itemLayout, setItemLayout] = React.useState([]);
+  const [itemsProps, setItemsProps] = React.useState({})
   const chkMounted = useIsMounted();
 
   useEffect(() => {
-    const { layout, mxCount } = layoutState.getState();
+    const { layout, mxCount, itemProps } = layoutState.getState();
+    console.log(layout);
     setNewCounter(mxCount);
     setItemLayout(layout);
+    setItemsProps(itemProps);
   }, [])
 
   useEffect(() => {
-    layoutState.saveState(itemLayout, newCounter);
-  }, [newCounter, itemLayout])
+    layoutState.saveState(itemLayout, newCounter, itemsProps);
+  }, [newCounter, itemLayout, itemsProps])
 
-  const handleAddItem = React.useCallback((lItem) => {
-    // Add a new item. It must have a unique key!
+  const handleAddItem = React.useCallback((lItem, type) => {
     setNewCounter(c => c + 1);
+    const newIdx = "n" + newCounter;
     setItemLayout(l => l.map(item => item.i !== DROPPING_ITEM ? item : {
-      i: "n" + newCounter,
+      i: newIdx,
       x: lItem.x,
       y: lItem.y,
       w: lItem.w,
-      h: lItem.h
+      h: lItem.h,
+    }))
+    setItemsProps((p) => ({
+      ...p,
+      [newIdx]: {
+        type
+      }
     }))
 
   }, [newCounter]);
@@ -51,9 +62,10 @@ const PreviewContent = React.forwardRef((props, ref) => {
   }, [props])
 
 
-  const handleDropComponent = React.useCallback((lout, lItem, event) => {
+  const handleDropComponent = React.useCallback((lout, lItem, e) => {
     // Add a new item. It must have a unique key!		
-    handleAddItem(lItem);
+    const type = e.dataTransfer.getData("text/plain");
+    handleAddItem(lItem, type);
   }, [handleAddItem]);
 
 
@@ -67,6 +79,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
       handleClearAllItem();
     }
   }));
+  console.log(itemLayout)
 
   return (
     <ReactGridLayout
@@ -87,21 +100,21 @@ const PreviewContent = React.forwardRef((props, ref) => {
       {
         itemLayout.map((item) =>
           (<div key={item.i} data-grid={item}>
-            <span className="text">{item.i}</span>
+            <PreviewComponent item={item} {...itemsProps[item.i]} >
+            </PreviewComponent>
           </div>)
         )
       }
-    </ReactGridLayout>
+    </ReactGridLayout >
   )
 })
 
 
 PreviewContent.defaultProps = {
-  className: "itemLayout",
+  className: "layout",
   cols: 12,
   rowHeight: 30,
   onLayoutChange: function () { },
-  onClearAllItem: function () { },
 };
 
 export default PreviewContent;
