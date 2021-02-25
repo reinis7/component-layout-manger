@@ -25,13 +25,6 @@ const DragSelectedItem = styled.button`
   
 `;
 
-const DeleteButton = styled.button`
-    height: 2rem;
-    margin: 0.25rem;
-    width: 10rem;  
-`;
-
-
 const CommonButton = styled.button`
     height: 2rem;
     margin: 0.25rem;

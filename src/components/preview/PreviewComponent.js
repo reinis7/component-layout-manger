@@ -11,7 +11,7 @@ export default function PreviewComponent({ type, ...rest }) {
             </video>
             break;
         case LINK_LABEL:
-            render_comp = <a to="https://www.w3schools.com/"> W3School</a>
+            render_comp = <a href="https://www.w3schools.com/"> W3School</a>
             break;
         case TEXT_LABEL:
             render_comp = <span> W3School</span>
@@ -21,6 +21,8 @@ export default function PreviewComponent({ type, ...rest }) {
             break;
         case CUSTOM_HTML_LABEL:
             render_comp = <span> W3School</span>
+            break;
+        default:
             break;
     }
     return render_comp;

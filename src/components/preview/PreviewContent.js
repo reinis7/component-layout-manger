@@ -40,30 +40,33 @@ const PreviewContent = React.forwardRef((props, ref) => {
     setNewCounter(c => c + 1);
     const newIdx = "n" + newCounter;
 
-    const getNewItem = (id, type) => {
-      let [x, y, w, h] = [0, 0, 12, 1]
-      switch (type) {
-        case IMAGE_LABEL:
-        case VIDEO_LABEL:
-          x = 3;
-          h = 4;
-          w = 6;
-          break;
-        case LINK_LABEL:
-        case TEXT_LABEL:
-        case CUSTOM_HTML_LABEL:
-        default:
-          break;
-      }
-      return {
-        i: id,
-        x: x,
-        y: y,
-        w: w,
-        h: h,
-      }
-    }
-    setItemLayout(l => l.map(item => item.i !== DROPPING_ITEM ? item : getNewItem(newIdx, type)))
+    // const getNewItem = (id, type) => {
+    //   let [x, y, w, h] = [lItem.x, lItem.y, 12, 1]
+    //   switch (type) {
+    //     case IMAGE_LABEL:
+    //     case VIDEO_LABEL:
+    //       x = 3;
+    //       h = 4;
+    //       w = 6;
+    //       break;
+    //     case LINK_LABEL:
+    //     case TEXT_LABEL:
+    //     case CUSTOM_HTML_LABEL:
+    //     default:
+    //       break;
+    //   }
+    //   return {
+    //     i: id,
+    //     x: x,
+    //     y: y,
+    //     w: w,
+    //     h: h,
+    //   }
+    // }
+    setItemLayout(l => l.map(item => item.i !== DROPPING_ITEM ? item :
+      // getNewItem(newIdx, type)
+      lItem
+    ))
     setItemsProps((p) => ({
       ...p,
       [newIdx]: {
@@ -80,7 +83,6 @@ const PreviewContent = React.forwardRef((props, ref) => {
 
   const handleLayoutChange = React.useCallback((lout) => {
     /*eslint no-console: 0*/
-    console.log(lout);
     setItemLayout(lout);
     props.onLayoutChange(lout);
   }, [props])
