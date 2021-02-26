@@ -26,7 +26,7 @@ const CloseButton = styled.span`
 
 const PreviewContent = React.forwardRef((props, ref) => {
 
-	const [newCounter, setNewCounter] = React.useState(0)
+	const [newCounter, setNewCounter] = React.useState(1234567890)
 	const [itemLayout, setItemLayout] = React.useState([])
 	const [itemsProps, setItemsProps] = React.useState({})
 	const [chooseItem, setChooseItem] = React.useState(null)
@@ -45,19 +45,19 @@ const PreviewContent = React.forwardRef((props, ref) => {
 	}, [newCounter, itemLayout, itemsProps])
 
 	const handleAddItem = React.useCallback((lItem, type) => {
-		setNewCounter(c => c + 1)
+		setNewCounter(c => c - 1)
 		const newIdx = "n" + newCounter
 
 		const getNewItem = (id, type) => {
-			let [x, y, w, h] = [lItem.x, lItem.y, 12, 1]
+			let [x, y, w, h] = [lItem.x, lItem.y - 1, 12, 1]
 			const props = {
 				type
 			}
 			switch (type) {
 				case IMAGE_LABEL:
-					x = 3;
+					x = 0;
 					h = 4;
-					w = 6;
+					w = 12;
 					props.url = 'https://www.w3schools.com/html/img_chania.jpg';
 					break;
 				case VIDEO_LABEL:
@@ -114,8 +114,9 @@ const PreviewContent = React.forwardRef((props, ref) => {
 
 
 	const handleClearAllItem = React.useCallback(() => {
-		setItemLayout([]);
 		layoutState.clearState();
+		setItemLayout([]);
+		setItemsProps({});
 	}, [])
 
 	const handleDoubleClick = React.useCallback((item) => {
@@ -132,22 +133,15 @@ const PreviewContent = React.forwardRef((props, ref) => {
 		getContentCodes() {
 			return pretty(
 				ReactDOMServer.renderToStaticMarkup(
-					// <ReactGridLayout
-					// 	{...props}
-					// 	itemLayout={itemLayout}
-					// >
-					// {
-					itemLayout.map((item) =>
-					(<div key={item.i}>
-						<PreviewComponent
-							item={item}
-							isSSR={true}
-							{...itemsProps[item.i]}
-						/>
-					</div>)
+					itemLayout.map((item) => (
+						<div key={item.i}>
+							<PreviewComponent
+								item={item}
+								isSSR={true}
+								{...itemsProps[item.i]}
+							/>
+						</div>)
 					)
-					// }
-					// </ReactGridLayout >
 				)
 			)
 		}
@@ -182,7 +176,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
 						itemLayout.map((item) =>
 						(<div
 							key={item.i}
-							onDoubleClick={() => handleDoubleClick(item)}
+							onClick={() => handleDoubleClick(item)}
 							data-grid={item}>
 							<PreviewComponent item={item} {...itemsProps[item.i]} >
 							</PreviewComponent>
