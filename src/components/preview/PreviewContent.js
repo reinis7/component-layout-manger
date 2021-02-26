@@ -132,22 +132,22 @@ const PreviewContent = React.forwardRef((props, ref) => {
 		getContentCodes() {
 			return pretty(
 				ReactDOMServer.renderToStaticMarkup(
-					<ReactGridLayout
-						{...props}
-						itemLayout={itemLayout}
-					>
-						{
-							itemLayout.map((item) =>
-							(<div key={item.i}>
-								<PreviewComponent
-									item={item}
-									isSSR={true}
-									{...itemsProps[item.i]}
-								/>
-							</div>)
-							)
-						}
-					</ReactGridLayout >
+					// <ReactGridLayout
+					// 	{...props}
+					// 	itemLayout={itemLayout}
+					// >
+					// {
+					itemLayout.map((item) =>
+					(<div key={item.i}>
+						<PreviewComponent
+							item={item}
+							isSSR={true}
+							{...itemsProps[item.i]}
+						/>
+					</div>)
+					)
+					// }
+					// </ReactGridLayout >
 				)
 			)
 		}
@@ -222,7 +222,6 @@ const PreviewWrapper = styled.div`
     overflow: hidden;
     padding: 20px;
     display: flex;
-
 `
 
 
@@ -237,7 +236,7 @@ const PreviewContentWrapper = styled.div`
 
 `
 const PreviewSettingWrapper = styled.div`
-    flex: 1 0 20%;
+    flex: 1 0 25%;
     width: 20%;
     max-width: 200px;
     padding: 10px;

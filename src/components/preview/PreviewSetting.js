@@ -42,7 +42,7 @@ export default function PreviewSetting({ item, itemProps, onCloseAction, ...rest
             _.toPairs(newProps).map(([k, v]) =>
               <PreviewSettingPropertySection key={k}>
                 <strong>{_.startCase(_.toLower(k))}</strong>: {k === 'content' ? (<textarea name={k} value={v} onChange={(e) => handleUpdateValue(k, e.target.value)} />) :
-                  (<input name={k} value={v} onChange={(e) => handleUpdateValue(k, e.target.value)} />)}
+                  (<PreviewSettingInput name={k} value={v} onChange={(e) => handleUpdateValue(k, e.target.value)} />)}
               </PreviewSettingPropertySection>
             )
           }
@@ -52,9 +52,11 @@ export default function PreviewSetting({ item, itemProps, onCloseAction, ...rest
           <CommonButton onClick={handleCloseModal}>close</CommonButton>
         </PreviewSettingActioins>
       </PreviewSettingWrapper>
-    ) : (<PreviewSettingWrapper>
-      No Item Selected
-    </PreviewSettingWrapper>)
+    ) : (<PreviewSettingCenterSpan>
+      <span>
+        No item selected.
+      </span>
+    </PreviewSettingCenterSpan>)
   )
 }
 
@@ -70,15 +72,31 @@ const PreviewSettingSubtitle = styled.h4`
 const PreviewSettingContent = styled.div`
   margin: 0.25em 0;
 `;
+const PreviewSettingInput = styled.input`
+  margin: 0.25em 0;
+  height: 1.5rem;
+`;
 
 const PreviewSettingActioins = styled.div`
-  margin: 0.25em 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
 `;
 const PreviewSettingPropertySection = styled.section`
-  margin: 0.25em 0;
+  margin: 0.75em 0;
 `;
+const PreviewSettingCenterSpan = styled.span`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  font-weight: bold;
+`
 
 const CommonButton = styled.button`
-  padding: 0.25rem 0.75rem;
-  margin: 0.5rem;
+padding: 0.25rem 0.75rem;
+margin: 0.5rem;
 `
