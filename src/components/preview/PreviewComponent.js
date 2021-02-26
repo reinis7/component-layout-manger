@@ -15,7 +15,6 @@ export default function PreviewComponent({ type, isSSR, ...rest }) {
 		}
 	}), []);
 
-
 	React.useEffect(() => {
 		if (type === VIDEO_LABEL) {
 			console.log('VIDEO_LABEL');
@@ -25,15 +24,12 @@ export default function PreviewComponent({ type, isSSR, ...rest }) {
 		}
 	}, [videoRef, type])
 
-	let url, label, content;
-
 	let render_comp = '<></>'
 	switch (type) {
 		case VIDEO_LABEL:
-			url = 'https://www.w3schools.com/html/mov_bbb.mp4';
 			render_comp = isSSR ? (
 				<video width="100%" height="100%" controls>
-					<source src={url} type="video/mp4" />
+					<source src={rest.url} type="video/mp4" />
 									Your browser does not support the video tag.
 				</video>
 			) : (
@@ -42,35 +38,28 @@ export default function PreviewComponent({ type, isSSR, ...rest }) {
 						height="100%"
 						controls
 						ref={videoRef}
-						url={url}
+						url={rest.url}
 					>
 					</ReactPlayer>
 				)
 			break;
-
 		case LINK_LABEL:
-			url = 'https://www.w3schools.com/';
-			label = 'W3School';
-			render_comp = <a href={url}> {label}</a>
+			render_comp = <a href={rest.url}> {rest.label}</a>
 			break;
-
 		case TEXT_LABEL:
-			label = 'W3School';
-			render_comp = <span> W3School</span>
+			render_comp = <p> {rest.content}</p>
 			break;
 
 		case IMAGE_LABEL:
-			url = 'https://www.w3schools.com/html/img_chania.jpg';
-			render_comp = <img src={url} alt="Flowers in Chania" width="100%" height="100%" />
+			render_comp = <img src={rest.url} alt="IMAGE NOT FOUND" width="100%" height="100%" />
 			break;
 
 		case CUSTOM_HTML_LABEL:
-			content = '<p>This is html parse Option</p>';
-			render_comp = parse(content, htmlParseOptions);
+			render_comp = parse(rest.content, htmlParseOptions);
 			break;
+
 		default:
 			render_comp = <span> New Item</span>
-			break;
 	}
 	return render_comp;
 }
