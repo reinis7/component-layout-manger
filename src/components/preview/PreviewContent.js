@@ -115,12 +115,16 @@ const PreviewContent = React.forwardRef((props, ref) => {
 						{
 							itemLayout.map((item) =>
 							(<div key={item.i}>
-								<PreviewComponent item={item} {...itemsProps[item.i]} >
-								</PreviewComponent>
+								<PreviewComponent
+									item={item}
+									isSSR={true}
+									{...itemsProps[item.i]}
+								/>
 							</div>)
 							)
 						}
-					</ReactGridLayout >)
+					</ReactGridLayout >
+				)
 			)
 		}
 	}));
