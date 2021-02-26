@@ -1,7 +1,9 @@
 import React from "react";
+import ReactDOMServer from "react-dom/server";
 import _ from "lodash";
 import RGL, { WidthProvider } from "react-grid-layout";
 import styled from "styled-components";
+import * as pretty from "pretty";
 
 import useIsMounted from 'hooks/useIsMounted'
 import { layoutState } from 'helper/layoutState';
@@ -104,7 +106,22 @@ const PreviewContent = React.forwardRef((props, ref) => {
 			handleClearAllItem();
 		},
 		getContentCodes() {
-			return '<div></div>'
+			return pretty(
+				ReactDOMServer.renderToStaticMarkup(
+					<ReactGridLayout
+						{...props}
+						itemLayout={itemLayout}
+					>
+						{
+							itemLayout.map((item) =>
+							(<div key={item.i}>
+								<PreviewComponent item={item} {...itemsProps[item.i]} >
+								</PreviewComponent>
+							</div>)
+							)
+						}
+					</ReactGridLayout >)
+			)
 		}
 	}));
 
@@ -125,7 +142,9 @@ const PreviewContent = React.forwardRef((props, ref) => {
 		>
 			{
 				itemLayout.map((item) =>
-				(<div key={item.i} data-grid={item}>
+				(<div
+					key={item.i}
+					data-grid={item}>
 					<PreviewComponent item={item} {...itemsProps[item.i]} >
 					</PreviewComponent>
 					<DeleteButton

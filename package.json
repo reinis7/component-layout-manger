@@ -8,10 +8,12 @@
     "@testing-library/user-event": "^12.7.3",
     "lodash": "^4.17.21",
     "lodash-uuid": "0.0.3",
+    "pretty": "^2.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-grid-layout": "^1.2.0",
     "react-html-code-viewer": "^2.2.1",
+    "react-modal": "^3.12.1",
     "react-scripts": "4.0.3",
     "styled-components": "^5.2.1",
     "web-vitals": "^1.1.0"
