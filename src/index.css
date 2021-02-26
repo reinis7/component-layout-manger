@@ -16,3 +16,6 @@ code {
   flex-direction: column;
   justify-content: space-around;
 }
+.react-resizable-handle{
+  z-index: 100;
+}

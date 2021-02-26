@@ -14,12 +14,13 @@ import ComponentUpdateModal from "./ComponentUpdateModal"
 
 const ReactGridLayout = WidthProvider(RGL)
 
-const DeleteButton = styled.span`
+const CloseButton = styled.span`
     position: absolute;
     right: 5px;
     top: -5px;
     font-weight: bold;
     cursor: pointer;
+		z-index: 10
 `
 
 const PreviewContent = React.forwardRef((props, ref) => {
@@ -183,12 +184,12 @@ const PreviewContent = React.forwardRef((props, ref) => {
 						data-grid={item}>
 						<PreviewComponent item={item} {...itemsProps[item.i]} >
 						</PreviewComponent>
-						<DeleteButton
+						<CloseButton
 							className="remove"
 							onClick={() => handleRemoveItem(item)}
 						>
 							x
-          </DeleteButton>
+          </CloseButton>
 					</div>)
 					)
 				}

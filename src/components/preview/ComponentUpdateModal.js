@@ -71,9 +71,8 @@ export default function ComponentUpdateModal({ chkDlgVisible, item, itemProps, o
         {
           _.toPairs(newProps).map(([k, v]) =>
             <div key={k}>
-              {k}: {k === 'content' ? (<input name={k} value={v} onChange={(e) => handleUpdateValue(k, e.target.value)} />) : (
-                <textarea name={k} value={v} onChange={(e) => handleUpdateValue(k, e.target.value)} />
-              )}
+              {k}: {k === 'content' ? (<textarea name={k} value={v} onChange={(e) => handleUpdateValue(k, e.target.value)} />) :
+                (<input name={k} value={v} onChange={(e) => handleUpdateValue(k, e.target.value)} />)}
             </div>
           )
         }

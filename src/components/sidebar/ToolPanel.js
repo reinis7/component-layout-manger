@@ -25,7 +25,7 @@ const DragSelectedItem = styled.button`
   
 `;
 
-const CommonButton = styled.button`
+const ClearButton = styled.button`
     height: 2rem;
     margin: 0.25rem;
     width: 10rem;  
@@ -48,11 +48,11 @@ export default function ToolPanel({ onDeleteButtonClicked }) {
           </DragSelectedItem>
         )
       }
-      <CommonButton
+      {/* <ClearButton
         onClick={() => onDeleteButtonClicked()}
       >
         Clear ALL
-      </CommonButton>
+      </ClearButton> */}
     </ToolPanelWrapper >
   )
 }
