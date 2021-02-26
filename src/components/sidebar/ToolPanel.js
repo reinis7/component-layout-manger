@@ -48,11 +48,11 @@ export default function ToolPanel({ onDeleteButtonClicked }) {
           </DragSelectedItem>
         )
       }
-      {/* <ClearButton
+      <ClearButton
         onClick={() => onDeleteButtonClicked()}
       >
         Clear ALL
-      </ClearButton> */}
+      </ClearButton>
     </ToolPanelWrapper >
   )
 }

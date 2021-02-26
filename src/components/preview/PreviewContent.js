@@ -30,7 +30,6 @@ const PreviewContent = React.forwardRef((props, ref) => {
 	const [itemLayout, setItemLayout] = React.useState([])
 	const [itemsProps, setItemsProps] = React.useState({})
 	const [chooseItem, setChooseItem] = React.useState(null)
-	const [chkDlgVisible, setChkDlgVisible] = React.useState(false)
 
 	const chkMounted = useIsMounted();
 
@@ -121,7 +120,6 @@ const PreviewContent = React.forwardRef((props, ref) => {
 
 	const handleDoubleClick = React.useCallback((item) => {
 		setChooseItem(item);
-		setChkDlgVisible(true);
 	}, [])
 
 	React.useImperativeHandle(ref, () => ({
@@ -161,15 +159,10 @@ const PreviewContent = React.forwardRef((props, ref) => {
 				[chooseItem.i]: newProps
 			})
 		}
-		setChkDlgVisible(false);
 	}, [chooseItem, itemsProps])
 
 	return (
 		<PreviewWrapper>
-			<PreviewSettingWrapper>
-				<PreviewSetting	>
-				</PreviewSetting>
-			</PreviewSettingWrapper>
 			<PreviewContentWrapper>
 				<ReactGridLayout
 					{...props}
@@ -204,13 +197,15 @@ const PreviewContent = React.forwardRef((props, ref) => {
 					}
 				</ReactGridLayout >
 			</PreviewContentWrapper>
+			<PreviewSettingWrapper>
+				<PreviewSetting
+					item={chooseItem}
+					itemProps={chooseItem && chooseItem.i && itemsProps[chooseItem.i]}
+					onCloseAction={handleCloseAction}
+				>
+				</PreviewSetting>
+			</PreviewSettingWrapper>
 		</PreviewWrapper>
-		// <ComponentUpdateModal
-		// 	chkDlgVisible={chkDlgVisible}
-		// 	item={chooseItem}
-		// 	itemProps={chooseItem && chooseItem.i && itemsProps[chooseItem.i]}
-		// 	onCloseAction={handleCloseAction}
-		// ></ComponentUpdateModal>		
 	)
 });
 
