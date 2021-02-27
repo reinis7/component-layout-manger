@@ -2,15 +2,17 @@ import React from 'react'
 import styled from 'styled-components'
 import _ from 'lodash'
 
+import useImageRatio from 'hooks/useImageRatio'
+import { IMAGE_LABEL, ATTR_PARAMS } from 'helper/commonNames'
 
-export default function PreviewSetting({ item, itemProps, onCloseAction, ...rest }) {
+export default function PreviewSetting({ item, itemProps, onSave, screenWidth, ...rest }) {
   const [newProps, setNewProps] = React.useState({});
 
+  const calcImageRatio = useImageRatio();
   //  filter the attribute
   React.useEffect(() => {
     const tProps = {}
-    for (let k of ['url', 'label', 'content']) {
-      console.log(`k-${k}`);
+    for (let k of ATTR_PARAMS) {
       if (_.has(itemProps, k)) {
         tProps[k] = itemProps[k]
       }
@@ -18,20 +20,51 @@ export default function PreviewSetting({ item, itemProps, onCloseAction, ...rest
     setNewProps(tProps);
   }, [itemProps])
 
-  const handleCloseModal = React.useCallback(() => {
-    onCloseAction();
-  }, [onCloseAction])
+  const handleCancelModal = React.useCallback(() => {
+    setNewProps(itemProps);
+  }, [itemProps])
+
+
+  const chkUpdateProps = React.useCallback(() => {
+    for (let k of ATTR_PARAMS) {
+      if (_.has(itemProps, k) && newProps[k] !== itemProps[k]) {
+        return true;
+      }
+    }
+    return false;
+  }, [itemProps, newProps]);
+
   const handleSaveModal = React.useCallback(() => {
-    onCloseAction({
+
+    // props check
+    if (!chkUpdateProps()) return;
+
+    if (screenWidth && itemProps.type === IMAGE_LABEL && itemProps.url !== newProps.url) {
+      calcImageRatio({
+        url: newProps.url,
+        w: screenWidth * item.w / 12
+      }, (h) => {
+        if (h !== item.h) {
+          const newItem = _.assign({}, item, { h });
+          onSave({
+            ...itemProps,
+            ...newProps
+          }, newItem);
+        }
+      })
+      return;
+    }
+    onSave({
       ...itemProps,
       ...newProps
     });
-  }, [onCloseAction, newProps, itemProps])
+  }, [onSave, newProps, item, itemProps, screenWidth, calcImageRatio, chkUpdateProps])
 
   const handleUpdateValue = React.useCallback((key, value) => {
     if (newProps[key] === value) return;
     setNewProps({ ...newProps, [key]: value });
   }, [newProps])
+
   return (
     item && itemProps ? (
       <PreviewSettingWrapper>
@@ -49,7 +82,7 @@ export default function PreviewSetting({ item, itemProps, onCloseAction, ...rest
         </PreviewSettingContent>
         <PreviewSettingActioins>
           <CommonButton onClick={handleSaveModal}>Save</CommonButton>
-          <CommonButton onClick={handleCloseModal}>close</CommonButton>
+          <CommonButton onClick={handleCancelModal}>restore</CommonButton>
         </PreviewSettingActioins>
       </PreviewSettingWrapper>
     ) : (<PreviewSettingCenterSpan>

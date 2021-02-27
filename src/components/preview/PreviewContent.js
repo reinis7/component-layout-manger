@@ -5,9 +5,10 @@ import RGL, { WidthProvider } from "react-grid-layout"
 import styled from "styled-components"
 import * as pretty from "pretty"
 
-import useIsMounted from 'hooks/useIsMounted'
 import { layoutState } from 'helper/layoutState'
 import { IMAGE_LABEL, VIDEO_LABEL, LINK_LABEL, TEXT_LABEL, CUSTOM_HTML_LABEL, DROPPING_ITEM } from 'helper/commonNames'
+import useIsMounted from 'hooks/useIsMounted'
+import useImageRatio from 'hooks/useImageRatio'
 
 import PreviewComponent from "./PreviewComponent"
 import PreviewSetting from "./PreviewSetting"
@@ -15,24 +16,17 @@ import PreviewSetting from "./PreviewSetting"
 
 const ReactGridLayout = WidthProvider(RGL)
 
-const CloseButton = styled.span`
-    position: absolute;
-    right: 5px;
-    top: -5px;
-    font-weight: bold;
-    cursor: pointer;
-		z-index: 10
-`
 
 const PreviewContent = React.forwardRef((props, ref) => {
 
-	const [newCounter, setNewCounter] = React.useState(1234567890)
+	const [newCounter, setNewCounter] = React.useState(0)
 	const [itemLayout, setItemLayout] = React.useState([])
 	const [itemsProps, setItemsProps] = React.useState({})
 	const [chooseItem, setChooseItem] = React.useState(null)
 
+	const GridWidth = props.width;
 	const chkMounted = useIsMounted();
-
+	const calcImageRatio = useImageRatio();
 	React.useEffect(() => {
 		const { layout, mxCount, itemProps } = layoutState.getState()
 		setNewCounter(mxCount);
@@ -44,56 +38,74 @@ const PreviewContent = React.forwardRef((props, ref) => {
 		layoutState.saveState(itemLayout, newCounter, itemsProps)
 	}, [newCounter, itemLayout, itemsProps])
 
-	const handleAddItem = React.useCallback((lItem, type) => {
-		setNewCounter(c => c - 1)
-		const newIdx = "n" + newCounter
 
-		const getNewItem = (id, type) => {
-			let [x, y, w, h] = [lItem.x, lItem.y - 1, 12, 1]
-			const props = {
-				type
-			}
-			switch (type) {
-				case IMAGE_LABEL:
-					x = 0;
-					h = 4;
-					w = 12;
-					props.url = 'https://www.w3schools.com/html/img_chania.jpg';
-					break;
-				case VIDEO_LABEL:
-					x = 3;
-					h = 4;
-					w = 6;
-					props.url = 'https://www.w3schools.com/html/mov_bbb.mp4';
-					break;
-				case LINK_LABEL:
-					props.url = '#';
-					props.label = 'Link';
-					break;
-				case TEXT_LABEL:
-					props.content = 'Text';
-					h = 2;
-					break;
-				case CUSTOM_HTML_LABEL:
-					props.content = '<p>This is html</p>';
-					break;
-				default:
-			}
-			return [{
-				i: id, x: x, y: y, w: w, h: h,
-			}, props]
+	const callbackLayoutItems = React.useCallback((h, newItem) => {
+		console.log(`h -------${h}`);
+		if (h !== newItem.h) {
+			setItemLayout(l => l.map(item => item.i !== newItem.i ? item : {
+				...newItem, h
+			}))
 		}
-		const [newItem, comProps] = getNewItem(newIdx, type);
+	}, [setItemLayout]);
+	const getNewItem = React.useCallback((id, type, lItem) => {
+		const newItem = {
+			x: lItem.x,
+			y: lItem.y ? lItem.y - 1 : 0,
+			w: 12,
+			h: 1,
+			i: id
+		}
+		const props = {
+			type
+		}
+		switch (type) {
+			case IMAGE_LABEL:
+				newItem.x = 0;
+				newItem.h = 4;
+				newItem.w = 12;
+				props.url = 'https://www.w3schools.com/html/img_chania.jpg';
+				calcImageRatio({
+					url: props.url,
+					w: GridWidth * newItem.w / 12,
+				}, (h) => { callbackLayoutItems(h, newItem) }
+					, (e) => {
+						console.log(e);
 
+					})
+				break;
+			case VIDEO_LABEL:
+				newItem.x = 3;
+				newItem.h = 4;
+				newItem.w = 6;
+				props.url = 'https://www.w3schools.com/html/mov_bbb.mp4';
+				break;
+			case LINK_LABEL:
+				props.url = '#';
+				props.label = 'Link';
+				break;
+			case TEXT_LABEL:
+				props.content = 'Text';
+				newItem.h = 1;
+				break;
+			case CUSTOM_HTML_LABEL:
+				props.content = '<p>This is html</p>';
+				break;
+			default:
+		}
+		return [newItem, props]
+	}, [GridWidth, calcImageRatio, callbackLayoutItems]);
+
+	const handleAddItem = React.useCallback((lItem, type) => {
+		setNewCounter(c => c + 1)
+		const newIdx = "n" + newCounter
+		const [newItem, comProps] = getNewItem(newIdx, type, lItem);
 		setItemLayout(l => l.map(item => item.i !== DROPPING_ITEM ? item : newItem))
-
 		setItemsProps((p) => ({
 			...p,
 			[newIdx]: comProps
 		}))
 
-	}, [newCounter]);
-
+	}, [newCounter, getNewItem]);
 
 	const handleRemoveItem = React.useCallback((el) => {
 		setItemLayout(_.reject(itemLayout, { i: el.i }));
@@ -119,7 +131,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
 		setItemsProps({});
 	}, [])
 
-	const handleDoubleClick = React.useCallback((item) => {
+	const handleItemClick = React.useCallback((item) => {
 		setChooseItem(item);
 	}, [])
 
@@ -146,21 +158,24 @@ const PreviewContent = React.forwardRef((props, ref) => {
 			)
 		}
 	}));
-	const handleCloseAction = React.useCallback((newProps) => {
+	const handleCloseAction = React.useCallback((newProps, newItem) => {
 		if (newProps) {
 			setItemsProps({
 				...itemsProps,
 				[chooseItem.i]: newProps
 			})
 		}
-	}, [chooseItem, itemsProps])
+		if (newItem) {
+			setItemLayout(its => its.map(it => it.i !== newItem.i ? it : newItem))
+		}
+	}, [chooseItem, itemsProps,])
 
 	return (
 		<PreviewWrapper>
 			<PreviewContentWrapper>
 				<ReactGridLayout
 					{...props}
-					itemLayout={itemLayout}
+					layout={itemLayout}
 					onDrop={handleDropComponent}
 					useCSSTransforms={!!chkMounted}
 					measureBeforeMount={false}
@@ -172,20 +187,24 @@ const PreviewContent = React.forwardRef((props, ref) => {
 					}}
 					onLayoutChange={handleLayoutChange}
 				>
+
 					{
 						itemLayout.map((item) =>
 						(<div
 							key={item.i}
-							onClick={() => handleDoubleClick(item)}
-							data-grid={item}>
-							<PreviewComponent item={item} {...itemsProps[item.i]} >
-							</PreviewComponent>
+							onClick={() => handleItemClick(item)}
+							data-grid={item}
+							data-id={item.i}
+						>
 							<CloseButton
 								className="remove"
 								onClick={() => handleRemoveItem(item)}
 							>
 								x
-          </CloseButton>
+							</CloseButton>
+							<PreviewComponent item={item} {...itemsProps[item.i]} >
+							</PreviewComponent>
+
 						</div>)
 						)
 					}
@@ -195,9 +214,11 @@ const PreviewContent = React.forwardRef((props, ref) => {
 				<PreviewSetting
 					item={chooseItem}
 					itemProps={chooseItem && chooseItem.i && itemsProps[chooseItem.i]}
-					onCloseAction={handleCloseAction}
+					onSave={handleCloseAction}
+					screenWidth={GridWidth}
 				>
 				</PreviewSetting>
+
 			</PreviewSettingWrapper>
 		</PreviewWrapper>
 	)
@@ -207,6 +228,7 @@ PreviewContent.defaultProps = {
 	className: "layout",
 	cols: 12,
 	rowHeight: 30,
+	width: 840,
 	onLayoutChange: function () { },
 };
 
@@ -238,4 +260,12 @@ const PreviewSettingWrapper = styled.div`
 `
 
 
+const CloseButton = styled.div`
+    position: absolute;
+    right: 5px;
+    top: -5px;
+    font-weight: bold;
+    cursor: pointer;
+		z-index: 101
+`
 export default PreviewContent;

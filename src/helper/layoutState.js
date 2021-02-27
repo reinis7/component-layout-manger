@@ -12,7 +12,7 @@ export const layoutState = {
 	},
 	getState: () => {
 		const getInitLayout = () => {
-			return { layout: [], mxCount: 1234567890, itemProps: {} };
+			return { layout: [], mxCount: 0, itemProps: {} };
 		}
 
 		let itemLayout = null;

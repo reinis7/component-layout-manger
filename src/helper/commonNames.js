@@ -27,3 +27,4 @@ export const DROPPING_ITEM = 'DROPPING_ITEM';
 export const CONTENT_NAME = 'CONTENT_NAME';
 export const CODE_NAME = 'CODE_NAME';
 
+export const ATTR_PARAMS = ['url', 'label', 'content']
