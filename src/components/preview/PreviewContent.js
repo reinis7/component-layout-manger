@@ -23,6 +23,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
 	const [itemLayout, setItemLayout] = React.useState([])
 	const [itemsProps, setItemsProps] = React.useState({})
 	const [chooseItem, setChooseItem] = React.useState(null)
+	const [droppingItem, setDroppingItem] = React.useState({})
 
 	const GridWidth = props.width;
 	const chkMounted = useIsMounted();
@@ -33,6 +34,8 @@ const PreviewContent = React.forwardRef((props, ref) => {
 		setItemLayout(layout);
 		setItemsProps(itemProps);
 	}, [])
+
+
 
 	React.useEffect(() => {
 		layoutState.saveState(itemLayout, newCounter, itemsProps)
@@ -47,14 +50,9 @@ const PreviewContent = React.forwardRef((props, ref) => {
 			}))
 		}
 	}, [setItemLayout]);
-	const getNewItem = React.useCallback((id, type, lItem) => {
-		const newItem = {
-			x: lItem.x,
-			y: lItem.y - 0.1,
-			w: 12,
-			h: 1,
-			i: id
-		}
+
+	const getNewItem = React.useCallback((type, lItem) => {
+		const newItem = Object.assign({}, lItem);
 		const props = {
 			type
 		}
@@ -92,19 +90,8 @@ const PreviewContent = React.forwardRef((props, ref) => {
 			default:
 		}
 		return [newItem, props]
-	}, [GridWidth, calcImageRatio, callbackLayoutItems, itemLayout]);
+	}, [GridWidth, calcImageRatio, callbackLayoutItems]);
 
-	const handleAddItem = React.useCallback((lItem, type) => {
-		setNewCounter(c => c + 1)
-		const newIdx = "n" + newCounter
-		const [newItem, comProps] = getNewItem(newIdx, type, lItem);
-		setItemLayout(itemLayout.map(item => item.i === DROPPING_ITEM ? newItem : item));
-		setItemsProps((p) => ({
-			...p,
-			[newIdx]: comProps
-		}))
-
-	}, [newCounter, getNewItem, itemLayout]);
 
 	const handleRemoveItem = React.useCallback((el) => {
 		setItemLayout(_.reject(itemLayout, { i: el.i }));
@@ -112,16 +99,29 @@ const PreviewContent = React.forwardRef((props, ref) => {
 
 	const handleLayoutChange = React.useCallback((lout) => {
 		/*eslint no-console: 0*/
-		setItemLayout(lout);
+		if (lout.length === itemLayout.length) {
+			// update for 
+			setItemLayout(lout);
+		}
 		props.onLayoutChange(lout);
 	}, [props])
 
 
 	const handleDropComponent = React.useCallback((lout, lItem, e) => {
+
 		// Add a new item. It must have a unique key!		
 		const type = e.dataTransfer.getData("text/plain");
-		handleAddItem(lItem, type);
-	}, [handleAddItem]);
+		const [newItem, comProps] = getNewItem(type, lItem);
+		const newLayouts = lout.map(item => item.i === lItem.i ? newItem : item);
+
+		setItemsProps(p => ({ ...p, [lItem.i]: comProps }))
+		setItemLayout(newLayouts);
+		setNewCounter(c => c + 1)
+	}, [getNewItem]);
+
+	React.useEffect(() => {
+		setDroppingItem({ i: "n" + newCounter, w: 12, h: 1 })
+	}, [newCounter])
 
 
 	const handleClearAllItem = React.useCallback(() => {
@@ -179,11 +179,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
 					useCSSTransforms={!!chkMounted}
 					measureBeforeMount={false}
 					isDroppable={true}
-					droppingItem={{
-						w: 12,
-						h: 1,
-						i: DROPPING_ITEM
-					}}
+					droppingItem={droppingItem}
 					onLayoutChange={handleLayoutChange}
 				>
 
