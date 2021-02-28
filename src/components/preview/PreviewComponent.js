@@ -45,7 +45,7 @@ export default function PreviewComponent({ type, isSSR, ...rest }) {
 			break;
 
 		case IMAGE_LABEL:
-			render_comp = <img src={rest.url} alt="IMAGE NOT FOUND" width="100%" height="100%" />
+			render_comp = <div className="img-wrap"><img src={rest.url} alt="IMAGE NOT FOUND" /></div>
 			break;
 
 		case CUSTOM_HTML_LABEL:

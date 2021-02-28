@@ -3,12 +3,14 @@ import styled from 'styled-components'
 import _ from 'lodash'
 
 import useImageRatio from 'hooks/useImageRatio'
-import { IMAGE_LABEL, ATTR_PARAMS } from 'helper/commonNames'
+import useVideoRatio from 'hooks/useVideoRatio'
+import { IMAGE_LABEL, VIDEO_LABEL, ATTR_PARAMS } from 'helper/commonNames'
 
 export default function PreviewSetting({ item, itemProps, onSave, screenWidth, ...rest }) {
   const [newProps, setNewProps] = React.useState({});
 
   const calcImageRatio = useImageRatio();
+  const calcVideoRatio = useVideoRatio();
   //  filter the attribute
   React.useEffect(() => {
     const tProps = {}
@@ -39,19 +41,34 @@ export default function PreviewSetting({ item, itemProps, onSave, screenWidth, .
     // props check
     if (!chkUpdateProps()) return;
 
-    if (screenWidth && itemProps.type === IMAGE_LABEL && itemProps.url !== newProps.url) {
-      calcImageRatio({
-        url: newProps.url,
-        w: screenWidth * item.w / 12
-      }, (h) => {
-        if (h !== item.h) {
-          const newItem = _.assign({}, item, { h });
-          onSave({
-            ...itemProps,
-            ...newProps
-          }, newItem);
-        }
-      })
+    if (screenWidth && itemProps.url !== newProps.url) {
+      if (itemProps.type === IMAGE_LABEL) {
+        calcImageRatio({
+          url: newProps.url,
+          w: screenWidth * item.w / 12
+        }, (h) => {
+          if (h !== item.h) {
+            const newItem = _.assign({}, item, { h });
+            onSave({
+              ...itemProps,
+              ...newProps
+            }, newItem);
+          }
+        })
+      } else if (itemProps.type === VIDEO_LABEL) {
+        calcVideoRatio({
+          url: newProps.url,
+          w: screenWidth * item.w / 12
+        }, (h) => {
+          if (h !== item.h) {
+            const newItem = _.assign({}, item, { h });
+            onSave({
+              ...itemProps,
+              ...newProps
+            }, newItem);
+          }
+        })
+      }
       return;
     }
     onSave({

@@ -9,6 +9,7 @@ import { layoutState } from 'helper/layoutState'
 import { IMAGE_LABEL, VIDEO_LABEL, LINK_LABEL, TEXT_LABEL, CUSTOM_HTML_LABEL, DROPPING_ITEM } from 'helper/commonNames'
 import useIsMounted from 'hooks/useIsMounted'
 import useImageRatio from 'hooks/useImageRatio'
+import useVideoRatio from 'hooks/useVideoRatio'
 
 import PreviewComponent from "./PreviewComponent"
 import PreviewSetting from "./PreviewSetting"
@@ -23,11 +24,13 @@ const PreviewContent = React.forwardRef((props, ref) => {
 	const [itemLayout, setItemLayout] = React.useState([])
 	const [itemsProps, setItemsProps] = React.useState({})
 	const [chooseItem, setChooseItem] = React.useState(null)
-	const [droppingItem, setDroppingItem] = React.useState({})
+	const [droppingItem, setDroppingItem] = React.useState({ i: DROPPING_ITEM, w: 12, h: 1 })
 
 	const GridWidth = props.width;
 	const chkMounted = useIsMounted();
 	const calcImageRatio = useImageRatio();
+	const calcVideoRatio = useVideoRatio();
+
 	React.useEffect(() => {
 		const { layout, mxCount, itemProps } = layoutState.getState()
 		setNewCounter(mxCount);
@@ -35,15 +38,12 @@ const PreviewContent = React.forwardRef((props, ref) => {
 		setItemsProps(itemProps);
 	}, [])
 
-
-
 	React.useEffect(() => {
 		layoutState.saveState(itemLayout, newCounter, itemsProps)
 	}, [newCounter, itemLayout, itemsProps])
 
 
 	const callbackLayoutItems = React.useCallback((h, newItem) => {
-		// console.log(`h -------${h}`);
 		if (h !== newItem.h) {
 			setItemLayout(l => l.map(item => item.i !== newItem.i ? item : {
 				...newItem, h
@@ -73,8 +73,16 @@ const PreviewContent = React.forwardRef((props, ref) => {
 			case VIDEO_LABEL:
 				newItem.x = 3;
 				newItem.h = 4;
-				newItem.w = 6;
+				newItem.w = 12;
 				props.url = 'https://www.w3schools.com/html/mov_bbb.mp4';
+				calcVideoRatio({
+					url: props.url,
+					w: GridWidth * newItem.w / 12,
+				}, (h) => { callbackLayoutItems(h, newItem) }
+					, (e) => {
+						console.log(e);
+					})
+
 				break;
 			case LINK_LABEL:
 				props.url = '#';
@@ -108,7 +116,6 @@ const PreviewContent = React.forwardRef((props, ref) => {
 
 
 	const handleDropComponent = React.useCallback((lout, lItem, e) => {
-
 		// Add a new item. It must have a unique key!		
 		const type = e.dataTransfer.getData("text/plain");
 		const [newItem, comProps] = getNewItem(type, lItem);
