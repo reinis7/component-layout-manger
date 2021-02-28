@@ -40,7 +40,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
 
 
 	const callbackLayoutItems = React.useCallback((h, newItem) => {
-		console.log(`h -------${h}`);
+		// console.log(`h -------${h}`);
 		if (h !== newItem.h) {
 			setItemLayout(l => l.map(item => item.i !== newItem.i ? item : {
 				...newItem, h
@@ -50,7 +50,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
 	const getNewItem = React.useCallback((id, type, lItem) => {
 		const newItem = {
 			x: lItem.x,
-			y: lItem.y ? lItem.y - 1 : 0,
+			y: lItem.y,
 			w: 12,
 			h: 1,
 			i: id
@@ -70,7 +70,6 @@ const PreviewContent = React.forwardRef((props, ref) => {
 				}, (h) => { callbackLayoutItems(h, newItem) }
 					, (e) => {
 						console.log(e);
-
 					})
 				break;
 			case VIDEO_LABEL:
@@ -93,19 +92,22 @@ const PreviewContent = React.forwardRef((props, ref) => {
 			default:
 		}
 		return [newItem, props]
-	}, [GridWidth, calcImageRatio, callbackLayoutItems]);
+	}, [GridWidth, calcImageRatio, callbackLayoutItems, itemLayout]);
 
 	const handleAddItem = React.useCallback((lItem, type) => {
 		setNewCounter(c => c + 1)
 		const newIdx = "n" + newCounter
 		const [newItem, comProps] = getNewItem(newIdx, type, lItem);
-		setItemLayout(l => l.map(item => item.i !== DROPPING_ITEM ? item : newItem))
+		setItemLayout(itemLayout.map(item => item.i === DROPPING_ITEM ? newItem : item.y === newItem.y ? ({
+			...item,
+			y: item.y + 0.1
+		}) : item))
 		setItemsProps((p) => ({
 			...p,
 			[newIdx]: comProps
 		}))
 
-	}, [newCounter, getNewItem]);
+	}, [newCounter, getNewItem, itemLayout]);
 
 	const handleRemoveItem = React.useCallback((el) => {
 		setItemLayout(_.reject(itemLayout, { i: el.i }));
