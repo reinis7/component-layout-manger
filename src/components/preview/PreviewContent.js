@@ -50,7 +50,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
 	const getNewItem = React.useCallback((id, type, lItem) => {
 		const newItem = {
 			x: lItem.x,
-			y: lItem.y,
+			y: lItem.y - 0.1,
 			w: 12,
 			h: 1,
 			i: id
@@ -98,10 +98,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
 		setNewCounter(c => c + 1)
 		const newIdx = "n" + newCounter
 		const [newItem, comProps] = getNewItem(newIdx, type, lItem);
-		setItemLayout(itemLayout.map(item => item.i === DROPPING_ITEM ? newItem : item.y === newItem.y ? ({
-			...item,
-			y: item.y + 0.1
-		}) : item))
+		setItemLayout(itemLayout.map(item => item.i === DROPPING_ITEM ? newItem : item));
 		setItemsProps((p) => ({
 			...p,
 			[newIdx]: comProps
