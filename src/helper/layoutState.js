@@ -1,29 +1,28 @@
-import { mystorage } from './localStorage.js';
+import API from 'helper/api';
 
-const LAYOUT_STATE = 'layout_state';
 
 export const layoutState = {
 	saveState: (layout, mxCount, itemProps) => {
-		mystorage.setItem(LAYOUT_STATE, JSON.stringify({
+		return API.post('/api/layout', {
 			layout,
 			mxCount,
 			itemProps
-		}));
+		})
 	},
-	getState: () => {
+	getState: async () => {
 		const getInitLayout = () => {
 			return { layout: [], mxCount: 0, itemProps: {} };
 		}
 
 		let itemLayout = null;
 		try {
-			itemLayout = JSON.parse(mystorage.getItem(LAYOUT_STATE));
+			itemLayout = await API.get('/api/layout')
 		} catch (error) { }
 		if (!itemLayout) itemLayout = getInitLayout();
 		return itemLayout;
 	},
-	clearState: () => {
-		mystorage.removeItem(LAYOUT_STATE);
+	clearState: async () => {
+		return await API.delete('/api/layout')
 	}
 }
 

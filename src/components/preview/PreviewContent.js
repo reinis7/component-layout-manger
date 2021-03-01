@@ -33,14 +33,16 @@ const PreviewContent = React.forwardRef((props, ref) => {
 	const calcVideoRatio = useVideoRatio();
 
 	React.useEffect(() => {
-		const { layout, mxCount, itemProps } = layoutState.getState()
-		setNewCounter(mxCount);
-		setItemLayout(layout);
-		setItemsProps(itemProps);
+		layoutState.getState().then((res) => {
+			const { layout, mxCount, itemProps } = res;
+			setNewCounter(mxCount);
+			setItemLayout(layout);
+			setItemsProps(itemProps);
+		})
 	}, [])
 
 	React.useEffect(() => {
-		layoutState.saveState(itemLayout, newCounter, itemsProps)
+		layoutState.saveState(itemLayout, newCounter, itemsProps).then((res) => console.log(res))
 	}, [newCounter, itemLayout, itemsProps])
 
 
@@ -135,7 +137,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
 
 
 	const handleClearAllItem = React.useCallback(() => {
-		layoutState.clearState();
+		layoutState.clearState().then((item) => console.log(item));
 		setItemLayout([]);
 		setItemsProps({});
 	}, [])
