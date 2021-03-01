@@ -40,6 +40,7 @@ export default function PreviewSetting({ item, itemProps, onSave, screenWidth, .
 
     // props check
     if (!chkUpdateProps()) return;
+    console.log('handleSaveModal');
 
     if (screenWidth && itemProps.url !== newProps.url) {
       if (itemProps.type === IMAGE_LABEL) {
@@ -55,6 +56,7 @@ export default function PreviewSetting({ item, itemProps, onSave, screenWidth, .
             }, newItem);
           }
         })
+        return;
       } else if (itemProps.type === VIDEO_LABEL) {
         calcVideoRatio({
           url: newProps.url,
@@ -68,9 +70,10 @@ export default function PreviewSetting({ item, itemProps, onSave, screenWidth, .
             }, newItem);
           }
         })
+        return;
       }
-      return;
     }
+    console.log(itemProps, newProps);
     onSave({
       ...itemProps,
       ...newProps
