@@ -39,3 +39,6 @@ code {
   min-width: 100%;
   transform: translate(-50%, -50%);
 }
+.react-grid-item p {
+  margin: auto;
+}
