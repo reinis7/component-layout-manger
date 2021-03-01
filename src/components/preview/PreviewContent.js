@@ -31,19 +31,29 @@ const PreviewContent = React.forwardRef((props, ref) => {
 	const chkMounted = useIsMounted();
 	const calcImageRatio = useImageRatio();
 	const calcVideoRatio = useVideoRatio();
+	const [firstLoad, setFirstLoad] = React.useState(false);
 
 	React.useEffect(() => {
-		layoutState.getState().then((res) => {
-			const { layout, mxCount, itemProps } = res;
+
+		const feach_data = async () => {
+			const data = await layoutState.getState();
+			const { layout, mxCount, itemProps } = data;
 			setNewCounter(mxCount);
 			setItemLayout(layout);
 			setItemsProps(itemProps);
-		})
+			console.log(mxCount);
+			console.log(layout);
+			console.log(itemProps);
+			setFirstLoad(true);
+		}
+		feach_data();
+
 	}, [])
 
 	React.useEffect(() => {
-		layoutState.saveState(itemLayout, newCounter, itemsProps).then((res) => console.log(res))
-	}, [newCounter, itemLayout, itemsProps])
+		if (!firstLoad) return;
+		layoutState.saveState(itemLayout, newCounter, itemsProps);
+	}, [newCounter, itemLayout, itemsProps,])
 
 
 	const callbackLayoutItems = React.useCallback((h, newItem) => {

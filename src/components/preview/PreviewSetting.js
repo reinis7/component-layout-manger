@@ -58,13 +58,14 @@ export default function PreviewSetting({ item, itemProps, onSave, screenWidth, .
           url: newProps.url,
           w: screenWidth * item.w / 12
         }, callback)
+        return;
       } else if (itemProps.type === VIDEO_LABEL) {
         calcVideoRatio({
           url: newProps.url,
           w: screenWidth * item.w / 12
         }, callback, (e) => console.log(e))
+        return;
       }
-      return;
     }
     onSave({
       ...itemProps,

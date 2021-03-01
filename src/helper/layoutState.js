@@ -3,11 +3,11 @@ import API from 'helper/api';
 
 export const layoutState = {
 	saveState: (layout, mxCount, itemProps) => {
-		return API.post('/api/layout', {
+		API.post('/api/layout', {
 			layout,
 			mxCount,
 			itemProps
-		})
+		}).then((res) => console.log(res))
 	},
 	getState: async () => {
 		const getInitLayout = () => {
@@ -17,8 +17,10 @@ export const layoutState = {
 		let itemLayout = null;
 		try {
 			itemLayout = await API.get('/api/layout')
+			itemLayout = itemLayout.data
+			console.log(itemLayout)
 		} catch (error) { }
-		if (!itemLayout) itemLayout = getInitLayout();
+		if (!itemLayout || !itemLayout.mxCount) itemLayout = getInitLayout();
 		return itemLayout;
 	},
 	clearState: async () => {

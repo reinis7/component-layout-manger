@@ -7,6 +7,9 @@
     "@testing-library/react": "^11.2.5",
     "@testing-library/user-event": "^12.7.3",
     "axios": "^0.21.1",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
     "html-react-parser": "^1.2.4",
     "lodash": "^4.17.21",
     "lodash-uuid": "0.0.3",
@@ -24,6 +27,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "server-nodemon": "nodemon src/helper/server.js",
+    "server": "node src/helper/server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -45,5 +50,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "miragejs": "^0.1.41",
+    "nodemon": "^2.0.7"
   }
 }
