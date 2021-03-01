@@ -47,13 +47,11 @@ export default function PreviewSetting({ item, itemProps, onSave, screenWidth, .
     if (screenWidth && itemProps.url !== newProps.url) {
 
       const callback = (h) => {
-        if (h !== item.h) {
-          const newItem = _.assign({}, item, { h });
-          onSave({
-            ...itemProps,
-            ...newProps
-          }, newItem);
-        }
+        const newItem = _.assign({}, item, { h });
+        onSave({
+          ...itemProps,
+          ...newProps
+        }, newItem);
       }
       if (itemProps.type === IMAGE_LABEL) {
         calcImageRatio({
@@ -64,7 +62,7 @@ export default function PreviewSetting({ item, itemProps, onSave, screenWidth, .
         calcVideoRatio({
           url: newProps.url,
           w: screenWidth * item.w / 12
-        }, callback)
+        }, callback, (e) => console.log(e))
       }
       return;
     }

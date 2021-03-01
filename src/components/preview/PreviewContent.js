@@ -166,14 +166,12 @@ const PreviewContent = React.forwardRef((props, ref) => {
 	}));
 	const handleCloseAction = React.useCallback((newProps, newItem) => {
 		if (newProps) {
-			console.log(newProps, newItem);
 			setItemsProps({
 				...itemsProps,
 				[chooseItem.i]: newProps
 			})
 		}
 		if (newItem) {
-			console.log(newProps, newItem);
 			setItemLayout(its => its.map(it => it.i !== newItem.i ? it : newItem))
 		}
 	}, [chooseItem, itemsProps,])

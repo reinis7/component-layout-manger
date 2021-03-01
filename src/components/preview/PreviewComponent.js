@@ -60,12 +60,14 @@ function VideoClip({ url }) {
 
 	React.useEffect(() => {
 		if (previousUrl.current !== url) {
+			console.log('url' + url);
+			console.log(videoRef);
 			videoRef?.current.load();
 		}
 	}, [url]);
 
 	return (
-		<video ref={videoRef} width="100%" height="100%" controls >
+		<video ref={videoRef} width="100%" height="100%" key={url} controls >
 			<source src={url} />
 			Your browser does not support the video tag.
 		</video>
