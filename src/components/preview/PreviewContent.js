@@ -151,7 +151,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
 		getContentCodes() {
 			return pretty(
 				ReactDOMServer.renderToStaticMarkup(
-					itemLayout.map((item) => (
+					itemLayout.map(item => item).sort((a, b) => (a.y - b.y)).map((item) => (
 						<div key={item.i}>
 							<PreviewComponent
 								item={item}
@@ -189,7 +189,6 @@ const PreviewContent = React.forwardRef((props, ref) => {
 					droppingItem={droppingItem}
 					onLayoutChange={handleLayoutChange}
 				>
-
 					{
 						itemLayout.map((item) =>
 						(<div
@@ -206,7 +205,6 @@ const PreviewContent = React.forwardRef((props, ref) => {
 							</CloseButton>
 							<PreviewComponent item={item} {...itemsProps[item.i]} >
 							</PreviewComponent>
-
 						</div>)
 						)
 					}
@@ -220,7 +218,6 @@ const PreviewContent = React.forwardRef((props, ref) => {
 					screenWidth={GridWidth}
 				>
 				</PreviewSetting>
-
 			</PreviewSettingWrapper>
 		</PreviewWrapper>
 	)
