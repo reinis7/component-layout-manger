@@ -30,8 +30,8 @@ export default function PreviewComponent({ type, isSSR, ...rest }) {
 		case VIDEO_LABEL:
 			render_comp =
 				<>
-					<VideoClip></VideoClip>
-					{!isSSR && (<VideoWrapper />)}
+					<VideoClip url={rest.url}></VideoClip>
+					{/* {!isSSR && (<VideoWrapper />)} */}
 				</>
 			break;
 		case LINK_LABEL:
@@ -55,10 +55,10 @@ export default function PreviewComponent({ type, isSSR, ...rest }) {
 	return render_comp;
 }
 function VideoClip({ url }) {
-	const videoRef = useRef();
-	const previousUrl = useRef(url);
+	const videoRef = React.useRef();
+	const previousUrl = React.useRef(url);
 
-	useEffect(() => {
+	React.useEffect(() => {
 		if (previousUrl.current !== url) {
 			videoRef?.current.load();
 		}
