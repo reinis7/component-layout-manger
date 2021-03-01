@@ -98,7 +98,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
 			default:
 		}
 		return [newItem, props]
-	}, [GridWidth, calcImageRatio, callbackLayoutItems]);
+	}, [GridWidth, calcImageRatio, callbackLayoutItems, calcVideoRatio]);
 
 
 	const handleRemoveItem = React.useCallback((el) => {
@@ -112,7 +112,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
 			setItemLayout(lout);
 		}
 		props.onLayoutChange(lout);
-	}, [props])
+	}, [props, itemLayout])
 
 
 	const handleDropComponent = React.useCallback((lout, lItem, e) => {
@@ -166,12 +166,14 @@ const PreviewContent = React.forwardRef((props, ref) => {
 	}));
 	const handleCloseAction = React.useCallback((newProps, newItem) => {
 		if (newProps) {
+			console.log(newProps, newItem);
 			setItemsProps({
 				...itemsProps,
 				[chooseItem.i]: newProps
 			})
 		}
 		if (newItem) {
+			console.log(newProps, newItem);
 			setItemLayout(its => its.map(it => it.i !== newItem.i ? it : newItem))
 		}
 	}, [chooseItem, itemsProps,])

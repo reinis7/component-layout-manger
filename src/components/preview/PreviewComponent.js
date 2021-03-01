@@ -30,10 +30,7 @@ export default function PreviewComponent({ type, isSSR, ...rest }) {
 		case VIDEO_LABEL:
 			render_comp =
 				<>
-					<video width="100%" height="100%" controls >
-						<source src={rest.url} type="video/mp4" />
-									Your browser does not support the video tag.
-					</video>
+					<VideoClip></VideoClip>
 					{!isSSR && (<VideoWrapper />)}
 				</>
 			break;
@@ -56,6 +53,23 @@ export default function PreviewComponent({ type, isSSR, ...rest }) {
 			render_comp = <span> New Item</span>
 	}
 	return render_comp;
+}
+function VideoClip({ url }) {
+	const videoRef = useRef();
+	const previousUrl = useRef(url);
+
+	useEffect(() => {
+		if (previousUrl.current !== url) {
+			videoRef?.current.load();
+		}
+	}, [url]);
+
+	return (
+		<video ref={videoRef} width="100%" height="100%" controls >
+			<source src={url} />
+			Your browser does not support the video tag.
+		</video>
+	);
 }
 PreviewComponent.defaultProps = {
 	type: "",

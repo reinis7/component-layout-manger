@@ -6,6 +6,9 @@ import useImageRatio from 'hooks/useImageRatio'
 import useVideoRatio from 'hooks/useVideoRatio'
 import { IMAGE_LABEL, VIDEO_LABEL, ATTR_PARAMS } from 'helper/commonNames'
 
+
+
+
 export default function PreviewSetting({ item, itemProps, onSave, screenWidth, ...rest }) {
   const [newProps, setNewProps] = React.useState({});
 
@@ -42,32 +45,26 @@ export default function PreviewSetting({ item, itemProps, onSave, screenWidth, .
     if (!chkUpdateProps()) return;
 
     if (screenWidth && itemProps.url !== newProps.url) {
+
+      const callback = (h) => {
+        if (h !== item.h) {
+          const newItem = _.assign({}, item, { h });
+          onSave({
+            ...itemProps,
+            ...newProps
+          }, newItem);
+        }
+      }
       if (itemProps.type === IMAGE_LABEL) {
         calcImageRatio({
           url: newProps.url,
           w: screenWidth * item.w / 12
-        }, (h) => {
-          if (h !== item.h) {
-            const newItem = _.assign({}, item, { h });
-            onSave({
-              ...itemProps,
-              ...newProps
-            }, newItem);
-          }
-        })
+        }, callback)
       } else if (itemProps.type === VIDEO_LABEL) {
         calcVideoRatio({
           url: newProps.url,
           w: screenWidth * item.w / 12
-        }, (h) => {
-          if (h !== item.h) {
-            const newItem = _.assign({}, item, { h });
-            onSave({
-              ...itemProps,
-              ...newProps
-            }, newItem);
-          }
-        })
+        }, callback)
       }
       return;
     }
@@ -75,7 +72,7 @@ export default function PreviewSetting({ item, itemProps, onSave, screenWidth, .
       ...itemProps,
       ...newProps
     });
-  }, [onSave, newProps, item, itemProps, screenWidth, calcImageRatio, chkUpdateProps])
+  }, [onSave, newProps, item, itemProps, screenWidth, calcImageRatio, chkUpdateProps, calcVideoRatio])
 
   const handleUpdateValue = React.useCallback((key, value) => {
     if (newProps[key] === value) return;
