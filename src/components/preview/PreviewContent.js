@@ -6,6 +6,7 @@ import styled from "styled-components"
 import * as pretty from "pretty"
 
 import { layoutState } from 'helper/layoutState'
+import { getLayoutHeight } from 'helper/utils'
 import { IMAGE_LABEL, VIDEO_LABEL, LINK_LABEL, TEXT_LABEL, CUSTOM_HTML_LABEL, DROPPING_ITEM } from 'helper/commonNames'
 import useIsMounted from 'hooks/useIsMounted'
 import useImageRatio from 'hooks/useImageRatio'
@@ -100,7 +101,9 @@ const PreviewContent = React.forwardRef((props, ref) => {
 		return [newItem, props]
 	}, [GridWidth, calcImageRatio, callbackLayoutItems, calcVideoRatio]);
 
-
+	const getUpdatedLayout = React.useCallback((items, newItem) => {
+		return items.map(item => item.i === newItem.i ? newItem : item);
+	}, [])
 	const handleRemoveItem = React.useCallback((el) => {
 		setItemLayout(_.reject(itemLayout, { i: el.i }));
 	}, [itemLayout]);
@@ -119,12 +122,12 @@ const PreviewContent = React.forwardRef((props, ref) => {
 		// Add a new item. It must have a unique key!		
 		const type = e.dataTransfer.getData("text/plain");
 		const [newItem, comProps] = getNewItem(type, lItem);
-		const newLayouts = lout.map(item => item.i === lItem.i ? newItem : item);
+		const newLayouts = getUpdatedLayout(lout, newItem);
 
 		setItemsProps(p => ({ ...p, [lItem.i]: comProps }))
 		setItemLayout(newLayouts);
 		setNewCounter(c => c + 1)
-	}, [getNewItem]);
+	}, [getNewItem, getUpdatedLayout]);
 
 	React.useEffect(() => {
 		setDroppingItem({ i: "n" + newCounter, w: 12, h: 1 })
@@ -137,6 +140,15 @@ const PreviewContent = React.forwardRef((props, ref) => {
 		setItemsProps({});
 	}, [])
 
+	const handleContentHeight = React.useCallback((height, item) => {
+		const newH = getLayoutHeight(height);
+		if (item.h < newH) {
+			setItemLayout(getUpdatedLayout(itemLayout, {
+				...item,
+				h: newH
+			}))
+		}
+	}, [getUpdatedLayout, itemLayout]);
 	const handleItemClick = React.useCallback((item) => {
 		setChooseItem(item);
 	}, [])
@@ -203,7 +215,11 @@ const PreviewContent = React.forwardRef((props, ref) => {
 							>
 								x
 							</CloseButton>
-							<PreviewComponent item={item} {...itemsProps[item.i]} >
+							<PreviewComponent
+								item={item}
+								{...itemsProps[item.i]}
+								onContentHeight={(h) => handleContentHeight(h, item)}
+							>
 							</PreviewComponent>
 						</div>)
 						)

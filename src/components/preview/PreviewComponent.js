@@ -14,8 +14,10 @@ const VideoWrapper = styled.div`
 	z-index: 10;
 `
 
-export default function PreviewComponent({ type, isSSR, ...rest }) {
+export default function PreviewComponent({ type, isSSR, onContentHeight, ...rest }) {
 
+
+	// const chldRef = React.useRef(null);
 	const htmlParseOptions = React.useMemo(() => ({
 		replace: (domNode) => {
 			if (domNode.attribs && domNode.attribs.class === "remove") {
@@ -24,8 +26,14 @@ export default function PreviewComponent({ type, isSSR, ...rest }) {
 		}
 	}), []);
 
+	const calcRef = React.useCallback((ref) => {
+		if (ref) {
+			onContentHeight(ref.offsetHeight)
+		}
+	}, [onContentHeight])
 
 	let render_comp = '<></>'
+	let parseHtml = '<></>'
 	switch (type) {
 		case VIDEO_LABEL:
 			render_comp =
@@ -35,10 +43,10 @@ export default function PreviewComponent({ type, isSSR, ...rest }) {
 				</>
 			break;
 		case LINK_LABEL:
-			render_comp = <a href={rest.url}> {rest.label}</a>
+			render_comp = <a ref={(e) => calcRef(e)} href={rest.url}> {rest.label}</a>
 			break;
 		case TEXT_LABEL:
-			render_comp = <p> {rest.content}</p>
+			render_comp = <p ref={(e) => calcRef(e)}> {rest.content}</p>
 			break;
 
 		case IMAGE_LABEL:
@@ -46,7 +54,8 @@ export default function PreviewComponent({ type, isSSR, ...rest }) {
 			break;
 
 		case CUSTOM_HTML_LABEL:
-			render_comp = parse(rest.content, htmlParseOptions);
+			parseHtml = parse(rest.content, htmlParseOptions)
+			render_comp = <div ref={(e) => calcRef(e)}>{parseHtml}</div>
 			break;
 
 		default:
