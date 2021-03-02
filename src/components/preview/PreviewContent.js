@@ -22,6 +22,7 @@ const ReactGridLayout = WidthProvider(RGL)
 const PreviewContent = React.forwardRef((props, ref) => {
 
 	const [newCounter, setNewCounter] = React.useState(0)
+	const [chkSaveState, setChkSaveState] = React.useState(false)
 	const [itemLayout, setItemLayout] = React.useState([])
 	const [itemsProps, setItemsProps] = React.useState({})
 	const [chooseItem, setChooseItem] = React.useState(null)
@@ -31,29 +32,29 @@ const PreviewContent = React.forwardRef((props, ref) => {
 	const chkMounted = useIsMounted();
 	const calcImageRatio = useImageRatio();
 	const calcVideoRatio = useVideoRatio();
-	const [firstLoad, setFirstLoad] = React.useState(false);
+
 
 	React.useEffect(() => {
-
 		const feach_data = async () => {
 			const data = await layoutState.getState();
 			const { layout, mxCount, itemProps } = data;
 			setNewCounter(mxCount);
 			setItemLayout(layout);
 			setItemsProps(itemProps);
-			console.log(mxCount);
-			console.log(layout);
-			console.log(itemProps);
-			setFirstLoad(true);
 		}
 		feach_data();
+	}, [])
 
+	const onDragStop = React.useCallback(() => {
+		setChkSaveState(true);
 	}, [])
 
 	React.useEffect(() => {
-		if (!firstLoad) return;
-		layoutState.saveState(itemLayout, newCounter, itemsProps);
-	}, [newCounter, itemLayout, itemsProps,])
+		if (chkSaveState) {
+			layoutState.saveState(itemLayout, newCounter, itemsProps);
+			setChkSaveState(false);
+		}
+	}, [newCounter, itemLayout, itemsProps, chkSaveState])
 
 
 	const callbackLayoutItems = React.useCallback((h, newItem) => {
@@ -116,9 +117,14 @@ const PreviewContent = React.forwardRef((props, ref) => {
 	const getUpdatedLayout = React.useCallback((items, newItem) => {
 		return items.map(item => item.i === newItem.i ? newItem : item);
 	}, [])
+
 	const handleRemoveItem = React.useCallback((el) => {
 		setItemLayout(_.reject(itemLayout, { i: el.i }));
-	}, [itemLayout]);
+		const newProps = Object.assign({}, itemsProps)
+		delete newProps[el.i];
+		setItemsProps(newProps);
+		setChkSaveState(true);
+	}, [itemLayout, itemsProps]);
 
 	const handleLayoutChange = React.useCallback((lout) => {
 		/*eslint no-console: 0*/
@@ -139,6 +145,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
 		setItemsProps(p => ({ ...p, [lItem.i]: comProps }))
 		setItemLayout(newLayouts);
 		setNewCounter(c => c + 1)
+		setChkSaveState(true);
 	}, [getNewItem, getUpdatedLayout]);
 
 	React.useEffect(() => {
@@ -189,14 +196,17 @@ const PreviewContent = React.forwardRef((props, ref) => {
 		}
 	}));
 	const handleCloseAction = React.useCallback((newProps, newItem) => {
-		if (newProps) {
-			setItemsProps({
-				...itemsProps,
-				[chooseItem.i]: newProps
-			})
-		}
-		if (newItem) {
-			setItemLayout(its => its.map(it => it.i !== newItem.i ? it : newItem))
+		if (newProps || newItem) {
+			if (newProps) {
+				setItemsProps({
+					...itemsProps,
+					[chooseItem.i]: newProps
+				})
+			}
+			if (newItem) {
+				setItemLayout(its => its.map(it => it.i !== newItem.i ? it : newItem))
+			}
+			setChkSaveState(true);
 		}
 	}, [chooseItem, itemsProps,])
 
@@ -212,6 +222,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
 					isDroppable={true}
 					droppingItem={droppingItem}
 					onLayoutChange={handleLayoutChange}
+					onDragStop={onDragStop}
 				>
 					{
 						itemLayout.map((item) =>
