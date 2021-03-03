@@ -171,6 +171,9 @@ const PreviewContent = React.forwardRef((props, ref) => {
 	const handleItemClick = React.useCallback((item) => {
 		setChooseItem(item);
 	}, [])
+	const handleCloseClick = React.useCallback(() => {
+		setChooseItem(null);
+	}, [])
 
 	React.useImperativeHandle(ref, () => ({
 		onClearAllItem() {
@@ -250,13 +253,14 @@ const PreviewContent = React.forwardRef((props, ref) => {
 				</ReactGridLayout >
 			</PreviewContentWrapper>
 			<PreviewSettingWrapper>
-				<PreviewSetting
+				{chooseItem && itemsProps[chooseItem.i] && (<PreviewSetting
 					item={chooseItem}
 					itemProps={chooseItem && chooseItem.i && itemsProps[chooseItem.i]}
 					onSave={handleCloseAction}
+					onClose={handleCloseClick}
 					screenWidth={GridWidth}
 				>
-				</PreviewSetting>
+				</PreviewSetting>)}
 			</PreviewSettingWrapper>
 		</PreviewWrapper>
 	)

@@ -9,7 +9,7 @@ import { IMAGE_LABEL, VIDEO_LABEL, ATTR_PARAMS } from 'helper/commonNames'
 
 
 
-export default function PreviewSetting({ item, itemProps, onSave, screenWidth, ...rest }) {
+export default function PreviewSetting({ item, itemProps, onSave, onClose, screenWidth, ...rest }) {
   const [newProps, setNewProps] = React.useState({});
 
   const calcImageRatio = useImageRatio();
@@ -96,6 +96,7 @@ export default function PreviewSetting({ item, itemProps, onSave, screenWidth, .
         <PreviewSettingActioins>
           <CommonButton onClick={handleSaveModal}>Save</CommonButton>
           <CommonButton onClick={handleCancelModal}>restore</CommonButton>
+          <CommonButton onClick={onClose}>close</CommonButton>
         </PreviewSettingActioins>
       </PreviewSettingWrapper>
     ) : (<PreviewSettingCenterSpan>
