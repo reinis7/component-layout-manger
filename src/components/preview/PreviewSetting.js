@@ -94,9 +94,8 @@ export default function PreviewSetting({ item, itemProps, onSave, onClose, scree
           }
         </PreviewSettingContent>
         <PreviewSettingActioins>
-          <CommonButton onClick={handleSaveModal}>Save</CommonButton>
+          <CommonButton onClick={() => { handleSaveModal(); onClose(); }}>Save</CommonButton>
           <CommonButton onClick={handleCancelModal}>restore</CommonButton>
-          <CommonButton onClick={onClose}>close</CommonButton>
         </PreviewSettingActioins>
       </PreviewSettingWrapper>
     ) : (<PreviewSettingCenterSpan>
