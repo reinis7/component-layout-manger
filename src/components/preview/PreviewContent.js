@@ -211,6 +211,7 @@ const PreviewContent = React.forwardRef((props, ref) => {
 			}
 			setChkSaveState(true);
 		}
+		setChooseItem(null);
 	}, [chooseItem, itemsProps,])
 
 	return (
@@ -253,16 +254,17 @@ const PreviewContent = React.forwardRef((props, ref) => {
 				</ReactGridLayout >
 			</PreviewContentWrapper>
 			<PreviewSettingWrapper>
-				{chooseItem && itemsProps[chooseItem.i] && (<PreviewSetting
-					item={chooseItem}
-					itemProps={chooseItem && chooseItem.i && itemsProps[chooseItem.i]}
-					onSave={handleCloseAction}
-					onClose={handleCloseClick}
-					screenWidth={GridWidth}
-				>
-				</PreviewSetting>)}
+				{(chooseItem && itemsProps[chooseItem.i]) ? (
+					<PreviewSetting
+						item={chooseItem}
+						itemProps={chooseItem && chooseItem.i && itemsProps[chooseItem.i]}
+						onSave={handleCloseAction}
+						onClose={handleCloseClick}
+						screenWidth={GridWidth}
+					></PreviewSetting>
+				) : <div>showToolPanel</div>}
 			</PreviewSettingWrapper>
-		</PreviewWrapper>
+		</PreviewWrapper >
 	)
 });
 
